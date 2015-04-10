@@ -1,0 +1,32 @@
+# Default Configuration File
+
+#Determine if MySql is used
+MySql: false
+MySqlHost: localhost
+MySqlPort: 3306
+MySqlUsername: root
+MySqlPassword: password
+MySqlDatabase: minecraft
+
+# List of words you want blocked from chat
+badWordsTier1:
+  - 'exampleword1'
+  - 'example_word2' # use '_' instead of spaces.
+
+#Enable the built in party system
+Parties_Enabled: false
+  
+# List of groups and their properties
+# Possible colors: black, dark blue, dark green, teal, dark red,
+#     purple, gold, gray, dark gray, blue, lime green, aqua, red, pink,
+#     yellow, white.
+
+Groups:
+  default:
+    groupNameColor: gray
+    groupBold: false
+    nameColor: white
+    nameBold: false
+    textColor: white
+    textBold: false
+    mediaLink: 'www.someLinkHere.com'

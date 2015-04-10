@@ -1,0 +1,10 @@
+name: TownyPatch
+description: Make Towny chat JSON
+author: FearMig
+website: www.GorillaCraft.com
+version: 1.0
+main: org.mig.townypatch.tPatch
+
+commands:
+  gchat:
+    description: TownyPatch commands
