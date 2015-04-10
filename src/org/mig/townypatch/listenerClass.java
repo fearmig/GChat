@@ -18,7 +18,6 @@ import com.palmergames.bukkit.towny.exceptions.TownyException;
 public class listenerClass implements Listener{
 	private static ArrayList<Player> newPlayerList = new ArrayList<Player>();
 	private final tPatch main;
-	thePatch t = new thePatch();
 	
 	public listenerClass(tPatch g){
 		this.main = g;
@@ -36,7 +35,7 @@ public class listenerClass implements Listener{
 				main.getConfig().set("MySql", false);
 			}
 		}
-		thePlayer tp = new thePlayer(event.getPlayer(),main);
+		thePlayer tp = new thePlayer(event.getPlayer(),tPatch.plugin);
 		tPatch.onlinePlayers.add(tp);
 		
 		//Set display for Player Tab List
@@ -54,7 +53,7 @@ public class listenerClass implements Listener{
 	
 	@EventHandler
 	public void onChat(AsyncPlayerChatEvent event) throws TownyException {
-		t.compileList();
+		thePatch.compileList();
 		for(int i = 0; i<tPatch.onlinePlayers.size(); i++){
 			if((tPatch.onlinePlayers.get(i).getName()).equals(event.getPlayer().getName())){
 				chatControl c = new chatControl(tPatch.onlinePlayers.get(i), event.getMessage(),minechatCompatability.mineChatStatus(event.getPlayer().getUniqueId()));

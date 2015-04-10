@@ -10,8 +10,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.palmergames.bukkit.towny.Towny;
-
 
 public class tPatch extends JavaPlugin{
 	public static tPatch plugin;
@@ -24,12 +22,12 @@ public class tPatch extends JavaPlugin{
 	YamlConfiguration pConfig;
 	
 	public void onEnable() {
-		
+		plugin = this;
 		getConfig().options().copyDefaults(true);
 		saveConfig();
-		plugin = this;
+		
 		//set up MySql table and PlayersYML
-		players = new File("plugins/tPatch/players.yml");
+		players = new File("plugins/TownyPatch/players.yml");
 		
 		if(getConfig().getBoolean("MySql")){
 			try {
@@ -57,7 +55,7 @@ public class tPatch extends JavaPlugin{
 			pConfig = YamlConfiguration.loadConfiguration(players);
 			bwh.fillList();
 		}
-		
+		plugin = this;
 		getServer().getPluginManager().registerEvents(this.l, this);
 		getCommand("gchat").setExecutor(new Commands());
 		
@@ -68,6 +66,7 @@ public class tPatch extends JavaPlugin{
 				onlinePlayers.add(tp);
 			}
 		}
+		
 	}
 	
 	public void onDisable(){
@@ -88,10 +87,6 @@ public class tPatch extends JavaPlugin{
 			}
 		}
 		return null;
-	}
-	
-	public Towny getTowny(){
-		return (Towny) getServer().getPluginManager().getPlugin("Towny");
 	}
 }
 

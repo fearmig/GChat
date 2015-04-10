@@ -144,10 +144,10 @@ public class chatControl{
 							fullM[0] = new TextComponent( new ComponentBuilder(tp.getMayor(r) + tp.getSur(r) + name + ": ")
 									.color(nameColor).bold(boldA)
 									.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(group + "")
-									.color(groupColor).bold(boldG).append("\n" + mediaLink).color(ChatColor.WHITE)
-									.append("\n" + "Nation:").color(ChatColor.GOLD).bold(true).append("" + tp.getNation(r))
-									.color(ChatColor.WHITE).append("\n" + "Town:").color(ChatColor.GOLD).bold(true)
-									.append("" + r.getTown()).color(ChatColor.WHITE).create())).create());
+									.color(groupColor).bold(boldG).append("\n" + mediaLink + "\n").color(ChatColor.DARK_PURPLE)
+									.append("Nation: ").color(ChatColor.DARK_GREEN).bold(false).append("" + tp.getNation(r) + "\n")
+									.color(ChatColor.WHITE).append("Town: ").color(ChatColor.DARK_GREEN).bold(false)
+									.append("" + tp.getTown(r)).color(ChatColor.WHITE).create())).event(new ClickEvent(ClickEvent.Action.OPEN_URL, mediaLink)).create());
 							
 							
 							fullM[1] = new TextComponent( new ComponentBuilder(message).color(messageColor).bold(boldM).create());
@@ -159,10 +159,10 @@ public class chatControl{
 								fullM[0] = new TextComponent( new ComponentBuilder(tp.getMayor(r) + tp.getSur(r) + name + ": ")
 									.color(nameColor).bold(boldA)
 									.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(group + "")
-									.color(groupColor).bold(boldG).append("" + tp.getNation(r))
-									.color(ChatColor.WHITE).append("\n" + "Town:").color(ChatColor.GOLD).bold(true)
-									.append("" + r.getTown()).color(ChatColor.WHITE).create()))
-									.event(new ClickEvent(ClickEvent.Action.OPEN_URL, mediaLink)).create());
+									.color(groupColor).bold(boldG).append("\n").append("Nation: ").color(ChatColor.DARK_GREEN).bold(false)
+									.append("" + tp.getNation(r) + "\n").color(ChatColor.WHITE).append("Town: ")
+									.color(ChatColor.DARK_GREEN).bold(false).append("" + tp.getTown(r)).color(ChatColor.WHITE)
+									.create())).create());
 							
 							fullM[1] = new TextComponent( new ComponentBuilder(message).color(messageColor).bold(boldM).create());
 							b.getPlayer().spigot().sendMessage(fullM);
