@@ -2,7 +2,10 @@ package org.mig.townypatch;
 
 import java.sql.SQLException;
 
-import org.bukkit.ChatColor;
+
+
+import net.md_5.bungee.api.ChatColor;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -194,6 +197,59 @@ public class Commands implements CommandExecutor{
 					}
 					else{
 					p.sendMessage(ChatColor.GREEN + "If you would like a Social Media Link please visit our store on GorillaCraft.com");
+					}
+				}
+			}
+		}
+		
+		//Town Chat mode
+		if(args[0].equalsIgnoreCase("tc")){
+			if(args.length==1){
+				if(sender instanceof Player){
+					Player p = (Player) sender;
+					for(int i = 0; i<tPatch.onlinePlayers.size(); i++){
+						if(tPatch.onlinePlayers.get(i).getName().equals(p.getName())){
+							thePatch tp = new thePatch();
+							if(tp.getResident(tPatch.onlinePlayers.get(i).getName()).hasTown()){
+								tPatch.onlinePlayers.get(i).setChatMode(2);
+								tPatch.onlinePlayers.get(i).setTextColor(ChatColor.AQUA);
+								p.sendMessage(ChatColor.AQUA + "Town Chat enabled.");
+							}
+						}
+					}
+				}
+			}
+		}
+		//Nation Chat mode
+		if(args[0].equalsIgnoreCase("nc")){
+			if(args.length==1){
+				if(sender instanceof Player){
+					Player p = (Player) sender;
+					for(int i = 0; i<tPatch.onlinePlayers.size(); i++){
+						if(tPatch.onlinePlayers.get(i).getName().equals(p.getName())){
+							thePatch tp = new thePatch();
+							if(tp.getResident(tPatch.onlinePlayers.get(i).getName()).hasNation()){
+								tPatch.onlinePlayers.get(i).setChatMode(1);
+								tPatch.onlinePlayers.get(i).setTextColor(ChatColor.GOLD);
+								p.sendMessage(ChatColor.GOLD + "Nation Chat enabled.");
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		//Global Chat mode
+		if(args[0].equalsIgnoreCase("gc")){
+			if(args.length==1){
+				if(sender instanceof Player){
+					Player p = (Player) sender;
+					for(int i = 0; i<tPatch.onlinePlayers.size(); i++){
+						if(tPatch.onlinePlayers.get(i).getName().equals(p.getName())){
+							tPatch.onlinePlayers.get(i).setChatMode(0);
+							tPatch.onlinePlayers.get(i).setTextColor(ChatColor.WHITE);
+							p.sendMessage(ChatColor.WHITE + "Global Chat enabled.");
+						}
 					}
 				}
 			}

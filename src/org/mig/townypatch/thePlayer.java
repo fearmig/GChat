@@ -16,11 +16,12 @@ public class thePlayer {
 	private String group;
 	private String mediaLink;
 	private ChatColor nameColor;
-	private ChatColor textColor;
+	private ChatColor textColor = ChatColor.WHITE;
 	private ChatColor groupColor;
 	private boolean nameBold;
 	private boolean textBold;
 	private boolean groupBold;
+	private int chatMode = 0;
 	private final tPatch main;
 	public List<UUID> onlinePlayers;
 	
@@ -141,6 +142,14 @@ public class thePlayer {
 	}
 	public void setGroupBold(boolean n){
 		groupBold = n;
+	}
+	
+	//Using ints for chatmode, 0 = Global, 1 = Nation, 2 = Town
+	public void setChatMode(int i){
+		chatMode = i;
+	}
+	public int getChatMode(){
+		return chatMode;
 	}
 	
 	public String getMediaLink(){

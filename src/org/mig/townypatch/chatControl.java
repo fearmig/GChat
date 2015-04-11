@@ -24,6 +24,7 @@ public class chatControl{
 	public boolean boldA;
 	public boolean boldM;
 	public boolean boldG;
+	public int chatMode;
 	public ChatColor messageColor;
 	public ChatColor groupColor;
 	public ChatColor nameColor;
@@ -49,6 +50,7 @@ public class chatControl{
 		boldM = tplayer.getTextBold();
 		groupColor = tplayer.getGroupColor();
 		boldG = tplayer.getGroupBold();
+		chatMode = tplayer.getChatMode();
 	}
 	
 	public void setMessage(String m){
@@ -151,7 +153,21 @@ public class chatControl{
 							
 							
 							fullM[1] = new TextComponent( new ComponentBuilder(message).color(messageColor).bold(boldM).create());
-							b.getPlayer().spigot().sendMessage(fullM);
+							
+							//Send to players depending on chatmode.
+							if(chatMode==0){
+								b.getPlayer().spigot().sendMessage(fullM);
+							}
+							else if(chatMode==1){
+								if(tp.getResident(name).getTown().getNation().equals(tp.getResident(b.getName()).getTown().getNation())){
+									b.getPlayer().spigot().sendMessage(fullM);
+								}
+							}
+							else if(chatMode==2){
+								if(tp.getResident(name).getTown().equals(tp.getResident(b.getName()).getTown())){
+									b.getPlayer().spigot().sendMessage(fullM);
+								}
+							}
 						}
 						else{
 							fullM = new TextComponent[2];
