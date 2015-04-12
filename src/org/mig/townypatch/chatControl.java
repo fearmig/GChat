@@ -159,13 +159,17 @@ public class chatControl{
 								b.getPlayer().spigot().sendMessage(fullM);
 							}
 							else if(chatMode==1){
-								if(tp.getResident(name).getTown().getNation().equals(tp.getResident(b.getName()).getTown().getNation())){
-									b.getPlayer().spigot().sendMessage(fullM);
+								if(tp.getResident(b.getName()).hasNation()){
+									if(tp.getResident(name).getTown().getNation().equals(tp.getResident(b.getName()).getTown().getNation())){
+										b.getPlayer().spigot().sendMessage(fullM);
+									}
 								}
 							}
 							else if(chatMode==2){
-								if(tp.getResident(name).getTown().equals(tp.getResident(b.getName()).getTown())){
-									b.getPlayer().spigot().sendMessage(fullM);
+								if(tp.getResident(b.getName()).hasTown()){
+									if(tp.getResident(name).getTown().equals(tp.getResident(b.getName()).getTown())){
+										b.getPlayer().spigot().sendMessage(fullM);
+									}
 								}
 							}
 						}
@@ -181,13 +185,31 @@ public class chatControl{
 									.create())).create());
 							
 							fullM[1] = new TextComponent( new ComponentBuilder(message).color(messageColor).bold(boldM).create());
-							b.getPlayer().spigot().sendMessage(fullM);
+							//Send to players depending on chatmode.
+							if(chatMode==0){
+								b.getPlayer().spigot().sendMessage(fullM);
+							}
+							else if(chatMode==1){
+								if(tp.getResident(b.getName()).hasNation()){
+									if(tp.getResident(name).getTown().getNation().equals(tp.getResident(b.getName()).getTown().getNation())){
+										b.getPlayer().spigot().sendMessage(fullM);
+									}
+								}
+							}
+							else if(chatMode==2){
+								if(tp.getResident(b.getName()).hasTown()){
+									if(tp.getResident(name).getTown().equals(tp.getResident(b.getName()).getTown())){
+										b.getPlayer().spigot().sendMessage(fullM);
+									}
+								}
+							}
 						}
 					}
 				}
 			}
 		}
 	}
+	
 	public void checkCaps(){
 		int i=0;
 		int count=0;
