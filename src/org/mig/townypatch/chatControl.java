@@ -208,6 +208,18 @@ public class chatControl{
 				}
 			}
 		}
+		tPatch.plugin.getLogger().info(name + ": " + message);
+	}
+	
+	//send message to group that has perm gchat.admin
+	public void adminGroupMessage(String s){
+		for(thePlayer p: tPatch.onlinePlayers){
+			if(p.getPlayer().hasPermission("gchat.admin")){
+				if(p.getSpyMode()){
+					p.getPlayer().sendMessage(ChatColor.YELLOW + s + "");
+				}
+			}
+		}
 	}
 	
 	public void checkCaps(){

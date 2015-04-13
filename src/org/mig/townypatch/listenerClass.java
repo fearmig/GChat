@@ -74,19 +74,18 @@ public class listenerClass implements Listener{
 				break;
 			}
 		}
+		event.setQuitMessage(null);
 	}
 	@EventHandler
 	public void onCommand(PlayerCommandPreprocessEvent event){
+		chatControl c = new chatControl();
+		c.adminGroupMessage(event.getPlayer().getName() + ": " + event.getMessage());
 		for(int i = 0; i < newPlayerList.size(); i++){
-			if(newPlayerList.get(i).getUniqueId().equals(event.getPlayer().getUniqueId())&& event.getMessage().equals("spawn")){
+			if(newPlayerList.get(i).getUniqueId().equals(event.getPlayer().getUniqueId())&& event.getMessage().equals("/spawn")){
 				event.getPlayer().sendMessage(ChatColor.BLUE + "MineChat has been detected and Minechat Mode turned on");
 				event.getPlayer().sendMessage(ChatColor.BLUE + "If this has been a mistake please type" + ChatColor.RED + " /gchat off");
 				minechatCompatability.mineChatOn(event.getPlayer().getUniqueId());
 			}
 		}
-	}
-	@EventHandler
-	public void onCommand(PlayerQuitEvent event){
-		event.setQuitMessage(null);
 	}
 }

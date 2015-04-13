@@ -5,6 +5,8 @@ website: www.GorillaCraft.com
 version: 1.0
 main: org.mig.townypatch.tPatch
 
+depend: [Essentials, Towny]
+
 commands:
   gchat:
     description: TownyPatch commands

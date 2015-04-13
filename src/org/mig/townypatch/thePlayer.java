@@ -18,6 +18,7 @@ public class thePlayer {
 	private ChatColor nameColor;
 	private ChatColor textColor = ChatColor.WHITE;
 	private ChatColor groupColor;
+	private boolean spyMode = false;
 	private boolean nameBold;
 	private boolean textBold;
 	private boolean groupBold;
@@ -150,6 +151,14 @@ public class thePlayer {
 	}
 	public int getChatMode(){
 		return chatMode;
+	}
+	
+	//Spymode - a feature to allow commands and private messages to be displayed in chat to admins
+	public void setSpyMode(boolean b){
+		spyMode = b;
+	}
+	public boolean getSpyMode(){
+		return spyMode;
 	}
 	
 	public String getMediaLink(){

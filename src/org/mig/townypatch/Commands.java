@@ -254,6 +254,28 @@ public class Commands implements CommandExecutor{
 				}
 			}
 		}
+		
+		//Spy Chat mode
+		if(args[0].equalsIgnoreCase("spy")){
+			if(args.length==1){
+				if(sender instanceof Player){
+					Player p = (Player) sender;
+					if(p.hasPermission("gchat.admin"))
+					for(int i = 0; i<tPatch.onlinePlayers.size(); i++){
+						if(tPatch.onlinePlayers.get(i).getName().equals(p.getName())){
+							if(tPatch.onlinePlayers.get(i).getSpyMode()){
+								tPatch.onlinePlayers.get(i).setSpyMode(false);
+								p.sendMessage(ChatColor.RED + "SpyMode disabled. Thats right, stop peaking.");
+							}
+							else{
+								tPatch.onlinePlayers.get(i).setSpyMode(true);
+								p.sendMessage(ChatColor.RED + "SpyMode enabled. You sneaky dog you.");
+							}
+						}
+					}
+				}
+			}
+		}
 		return false;
 	}
 
