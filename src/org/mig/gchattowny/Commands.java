@@ -21,6 +21,7 @@ public class Commands implements CommandExecutor{
 	@Override
 	public boolean onCommand(CommandSender sender, Command command,
 			String label, String[] args) {
+		
 		if(sender instanceof Player){
 			Player p = (Player) sender;
 			
@@ -65,8 +66,13 @@ public class Commands implements CommandExecutor{
 					//turn on spychat mode
 					spyMode(args, p);
 					break;
+				case "help":
+					//send help message
+					help(p);
+					break;
 				default:
-					
+					p.sendMessage(ChatColor.RED + "Incorrect /gchat command. Please do " + ChatColor.GOLD +
+							"/gchat help" + ChatColor.RED + "for help with gchat commands.");
 					break;
 			}
 		}
@@ -186,8 +192,8 @@ public class Commands implements CommandExecutor{
 			
 	//Set Media link twitter
 	private void set(String args[], Player p){
-		if(args.length==3){
-			if(p.hasPermission("gchat.medialink")){
+		if(p.hasPermission("gchat.medialink")){
+			if(args.length==3){
 				if(args[1]!=null){
 					if(args[1].equalsIgnoreCase("twitter")){
 						tPatch.getThePlayer(p).setMediaLink("https://twitter.com/"+args[2]);
@@ -201,11 +207,23 @@ public class Commands implements CommandExecutor{
 						tPatch.getThePlayer(p).setMediaLink("https://twitch.tv/"+args[2]);
 						p.sendMessage(ChatColor.AQUA + "Your Twitch channel has been set as: " + ChatColor.DARK_AQUA + args[1]);
 					}
+					else if(args[1].equalsIgnoreCase("help")){
+						p.sendMessage(ChatColor.AQUA + "/gchat set twitter {twitterName}" + ChatColor.GOLD + " ~ set Twitter media link. Do not include @");
+						p.sendMessage(ChatColor.AQUA + "/gchat set youtube {channelName}" + ChatColor.GOLD + " ~ set Youtube media link. Only include what is after youtube.com/user/");
+						p.sendMessage(ChatColor.AQUA + "/gchat set twitch {channelName}" + ChatColor.GOLD + " ~ set Twitch media link. Only include channel name.");
+					}
 				}
 			}
 			else{
-				p.sendMessage(ChatColor.GREEN + "If you would like a Social Media Link please visit our store on GorillaCraft.com");
+				if(args[1].equalsIgnoreCase("help")){
+					p.sendMessage(ChatColor.AQUA + "/gchat set twitter {twitterName}" + ChatColor.GOLD + " ~ set Twitter media link. Do not include @");
+					p.sendMessage(ChatColor.AQUA + "/gchat set youtube {channelName}" + ChatColor.GOLD + " ~ set Youtube media link. Only include what is after youtube.com/user/");
+					p.sendMessage(ChatColor.AQUA + "/gchat set twitch {channelName}" + ChatColor.GOLD + " ~ set Twitch media link. Only include channel name.");
+				}
 			}
+		}
+		else{
+			p.sendMessage(ChatColor.GREEN + "If you would like a Social Media Link please visit our store on GorillaCraft.com");
 		}
 	}
 		
@@ -300,5 +318,28 @@ public class Commands implements CommandExecutor{
 				}
 			}
 		}
+	}
+
+	//Provide Help on commands
+	private void help(Player p){
+		p.sendMessage(ChatColor.AQUA + "      " + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "GChat Help");
+		p.sendMessage("");
+		p.sendMessage(ChatColor.AQUA + "/gchat on" + ChatColor.GOLD + " ~ Turn on Minechat Mode (non JSON text)");
+		p.sendMessage(ChatColor.AQUA + "/gchat off" + ChatColor.GOLD + " ~ Turn off Minechat Mode (non JSON text)");
+		p.sendMessage(ChatColor.AQUA + "/gchat set {}" + ChatColor.GOLD + " ~ do '/gchat set help' to learn more");
+		p.sendMessage(ChatColor.AQUA + "/gchat tc" + ChatColor.GOLD + " ~ Put yourself into Town Chat Mode");
+		p.sendMessage(ChatColor.AQUA + "/gchat tc some message here" + ChatColor.GOLD + " ~ Sends a single message in Town Chat Mode");
+		p.sendMessage(ChatColor.AQUA + "/gchat nc" + ChatColor.GOLD + " ~ Put yourself into Nation Chat Mode");
+		p.sendMessage(ChatColor.AQUA + "/gchat nc some message here" + ChatColor.GOLD + " ~ Sends a single message in Nation Chat Mode");
+		p.sendMessage(ChatColor.AQUA + "/gchat gc" + ChatColor.GOLD + " ~ Put yourself into Global Chat Mode");
+		p.sendMessage(ChatColor.AQUA + "/gchat gc some message here" + ChatColor.GOLD + " ~ Sends a single message in Global Chat Mode");
+
+		if(p.hasPermission("gchat.admin")){
+			p.sendMessage(ChatColor.AQUA + "/gchat spy" + ChatColor.GOLD + " ~ Toggles on and off Spy Mode");
+			p.sendMessage(ChatColor.AQUA + "/gchat blockword {word}" + ChatColor.GOLD + " ~ Add word to blocked word list");
+			p.sendMessage(ChatColor.AQUA + "/gchat unblockword {word}" + ChatColor.GOLD + " ~ remove word from blocked word list");
+			p.sendMessage(ChatColor.AQUA + "/gchat importwords" + ChatColor.GOLD + " ~ import badword list to MySql");
+		}
+		
 	}
 }
