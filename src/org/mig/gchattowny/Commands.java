@@ -1,4 +1,4 @@
-package org.mig.townypatch;
+package org.mig.gchattowny;
 
 import java.sql.SQLException;
 
@@ -149,13 +149,8 @@ public class Commands implements CommandExecutor{
 					Player p = (Player) sender;
 					if(p.hasPermission("gchat.medialink")){
 						if(args[1]!=null){
-							for(int i = 0; i<tPatch.onlinePlayers.size(); i++){
-								if(tPatch.onlinePlayers.get(i).getName().equals(p.getName())){
-									tPatch.onlinePlayers.get(i).setMediaLink("https://twitter.com/"+args[1]);
-									p.sendMessage(ChatColor.AQUA + "Your Twitter username has been set as: " + ChatColor.DARK_AQUA + args[1]);
-									break;
-								}
-							}
+							tPatch.getThePlayer(p).setMediaLink("https://twitter.com/"+args[1]);
+							p.sendMessage(ChatColor.AQUA + "Your Twitter username has been set as: " + ChatColor.DARK_AQUA + args[1]);
 						}
 					}
 					else{
@@ -171,13 +166,8 @@ public class Commands implements CommandExecutor{
 					Player p = (Player) sender;
 					if(p.hasPermission("gchat.medialink")){
 						if(args[1]!=null){
-							for(int i = 0; i<tPatch.onlinePlayers.size(); i++){
-								if(tPatch.onlinePlayers.get(i).getName().equals(p.getName())){
-									tPatch.onlinePlayers.get(i).setMediaLink("https://youtube.com/user/"+args[1]);
-									p.sendMessage(ChatColor.AQUA + "Your Youtube username has been set as: " + ChatColor.DARK_AQUA + args[1]);
-									break;
-								}
-							}
+							tPatch.getThePlayer(p).setMediaLink("https://youtube.com/user/"+args[1]);
+							p.sendMessage(ChatColor.AQUA + "Your Youtube username has been set as: " + ChatColor.DARK_AQUA + args[1]);
 						}
 					}
 					else{

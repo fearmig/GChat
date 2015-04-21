@@ -1,4 +1,4 @@
-package org.mig.townypatch;
+package org.mig.gchattowny;
 
 import com.palmergames.bukkit.towny.TownyFormatter;
 import com.palmergames.bukkit.towny.exceptions.TownyException;

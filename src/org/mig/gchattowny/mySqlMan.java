@@ -1,4 +1,4 @@
-package org.mig.townypatch;
+package org.mig.gchattowny;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

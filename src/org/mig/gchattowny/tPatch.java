@@ -1,4 +1,4 @@
-package org.mig.townypatch;
+package org.mig.gchattowny;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +27,7 @@ public class tPatch extends JavaPlugin{
 		saveConfig();
 		
 		//set up MySql table and PlayersYML
-		players = new File("plugins/TownyPatch/players.yml");
+		players = new File("plugins/GChatTowny/players.yml");
 		
 		if(getConfig().getBoolean("MySql")){
 			try {

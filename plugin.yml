@@ -1,9 +1,9 @@
-name: TownyPatch
+name: GChatTowny
 description: Make Towny chat JSON
 author: FearMig
-website: www.GorillaCraft.com
+website: www.github.com/fearmig
 version: 1.0
-main: org.mig.townypatch.tPatch
+main: org.mig.gchattowny.tPatch
 
 depend: [Essentials, Towny]
 
