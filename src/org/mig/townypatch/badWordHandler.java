@@ -38,7 +38,7 @@ public class badWordHandler {
 		}
 	}
 	
-	public boolean testMessage(String m){
+	public String testMessage(String m){
 		//gChat.plugin.reloadConfig();
 		m = m.toLowerCase();
 		if(badWords!=null){
@@ -52,14 +52,14 @@ public class badWordHandler {
 				if(m.contains((CharSequence)tWord1)){
 					int index;
 					if(m.contains((CharSequence)tWord2)){
-						return false;
+						return tWord1;
 					}
 					else if(m.contains((CharSequence)tWord3)){
 						try{
 							index = m.indexOf(tWord3) + tWord3.length();
 							m.charAt(index);
 						}catch(IndexOutOfBoundsException e){
-							return false;
+							return tWord1;
 						}
 					}
 					else if(m.contains((CharSequence)tWord4)){
@@ -67,16 +67,16 @@ public class badWordHandler {
 							index = m.indexOf(tWord4)-1;
 							m.charAt(index);
 						}catch(IndexOutOfBoundsException e){
-							return false;
+							return tWord1;
 						}
 					}
 					else if(m.length()==tWord1.length()){
-						return false;
+						return tWord1;
 					}
 				}
 			}
 		}
-		return true;
+		return null;
 			
 	}
 }

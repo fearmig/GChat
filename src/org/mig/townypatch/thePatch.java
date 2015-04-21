@@ -15,6 +15,7 @@ public class thePatch {
 	}
 	
 	public Resident getResident(String name){
+		compileList();
 		for(Resident r: playerList){
 			if(name.equalsIgnoreCase(r.getName()))
 				return r;

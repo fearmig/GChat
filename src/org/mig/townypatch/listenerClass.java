@@ -54,26 +54,15 @@ public class listenerClass implements Listener{
 	@EventHandler
 	public void onChat(AsyncPlayerChatEvent event) throws TownyException {
 		thePatch.compileList();
-		for(int i = 0; i<tPatch.onlinePlayers.size(); i++){
-			if((tPatch.onlinePlayers.get(i).getName()).equals(event.getPlayer().getName())){
-				chatControl c = new chatControl(tPatch.onlinePlayers.get(i), event.getMessage(),minechatCompatability.mineChatStatus(event.getPlayer().getUniqueId()));
-				c.chat();
-				
-				break;
-			}
-		}
-		event.setCancelled(true);
+		chatControl c = new chatControl(tPatch.getThePlayer(event.getPlayer()), event.getMessage(),minechatCompatability.mineChatStatus(event.getPlayer().getUniqueId()));
+		c.chat();
+				event.setCancelled(true);
 	}
 	
 	@EventHandler
 	public void onLeave(PlayerQuitEvent event){
 		minechatCompatability.mineChatOff(event.getPlayer().getUniqueId());
-		for(int i = 0; i<tPatch.onlinePlayers.size(); i++){
-			if(tPatch.onlinePlayers.get(i).getName().equals(event.getPlayer().getName())){
-				tPatch.onlinePlayers.remove(i);
-				break;
-			}
-		}
+		tPatch.onlinePlayers.remove(tPatch.getThePlayer(event.getPlayer()));
 		event.setQuitMessage(null);
 	}
 	@EventHandler

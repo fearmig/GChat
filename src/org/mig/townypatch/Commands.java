@@ -4,12 +4,16 @@ import java.sql.SQLException;
 
 
 
+
+
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import com.palmergames.bukkit.towny.exceptions.TownyException;
 
 public class Commands implements CommandExecutor{
 	@Override
@@ -34,7 +38,7 @@ public class Commands implements CommandExecutor{
 			}
 		}
 		//turn minechat mode off
-		if(args[0].equalsIgnoreCase("off")){
+		else if(args[0].equalsIgnoreCase("off")){
 			if(args.length == 1){
 				if(sender instanceof Player){
 					Player p = (Player) sender;
@@ -52,7 +56,7 @@ public class Commands implements CommandExecutor{
 			}
 		}
 		//add a word to the blocked words list
-		if(args[0].equalsIgnoreCase("blockword")){
+		else if(args[0].equalsIgnoreCase("blockword")){
 			Player p = (Player) sender;
 			if(p.hasPermission("gchat.admin")){
 				p.sendMessage(ChatColor.WHITE + "The word '" + ChatColor.RED + args[1] + ChatColor.WHITE + "' has been blocked.");
@@ -84,7 +88,7 @@ public class Commands implements CommandExecutor{
 			}
 		}
 		//remove a word from the blocked words list
-		if(args[0].equalsIgnoreCase("unblockword")){
+		else if(args[0].equalsIgnoreCase("unblockword")){
 			Player p = (Player) sender;
 			if(p.hasPermission("gchat.admin")){
 				p.sendMessage(ChatColor.WHITE + "The word '" + ChatColor.RED + args[1] + ChatColor.WHITE + "' has been unblocked.");
@@ -116,7 +120,7 @@ public class Commands implements CommandExecutor{
 			}
 		}
 		//Covert yml badwordslist to MySQL
-		if(args[0].equalsIgnoreCase("importwords")){
+		else if(args[0].equalsIgnoreCase("importwords")){
 			Player p = (Player) sender;
 			badWordHandler bwh = new badWordHandler();
 			if(p.hasPermission("gchat.admin")){
@@ -139,7 +143,7 @@ public class Commands implements CommandExecutor{
 		
 		
 		//Set Media link twitter
-		if(args[0].equalsIgnoreCase("setTwitter")){
+		else if(args[0].equalsIgnoreCase("setTwitter")){
 			if(args.length==2){
 				if(sender instanceof Player){
 					Player p = (Player) sender;
@@ -149,6 +153,7 @@ public class Commands implements CommandExecutor{
 								if(tPatch.onlinePlayers.get(i).getName().equals(p.getName())){
 									tPatch.onlinePlayers.get(i).setMediaLink("https://twitter.com/"+args[1]);
 									p.sendMessage(ChatColor.AQUA + "Your Twitter username has been set as: " + ChatColor.DARK_AQUA + args[1]);
+									break;
 								}
 							}
 						}
@@ -160,7 +165,7 @@ public class Commands implements CommandExecutor{
 			}
 		}
 		//Set Media link youtube
-		if(args[0].equalsIgnoreCase("setYoutube")){
+		else if(args[0].equalsIgnoreCase("setYoutube")){
 			if(args.length==2){
 				if(sender instanceof Player){
 					Player p = (Player) sender;
@@ -170,6 +175,7 @@ public class Commands implements CommandExecutor{
 								if(tPatch.onlinePlayers.get(i).getName().equals(p.getName())){
 									tPatch.onlinePlayers.get(i).setMediaLink("https://youtube.com/user/"+args[1]);
 									p.sendMessage(ChatColor.AQUA + "Your Youtube username has been set as: " + ChatColor.DARK_AQUA + args[1]);
+									break;
 								}
 							}
 						}
@@ -181,18 +187,14 @@ public class Commands implements CommandExecutor{
 			}
 		}
 		//Set Media link twitch
-		if(args[0].equalsIgnoreCase("setTwitch")){
+		else if(args[0].equalsIgnoreCase("setTwitch")){
 			if(args.length==2){
 				if(sender instanceof Player){
 					Player p = (Player) sender;
 					if(p.hasPermission("gchat.medialink")){
 						if(args[1]!=null){
-							for(int i = 0; i<tPatch.onlinePlayers.size(); i++){
-								if(tPatch.onlinePlayers.get(i).getName().equals(p.getName())){
-									tPatch.onlinePlayers.get(i).setMediaLink("https://twitch.tv/"+args[1]);
-									p.sendMessage(ChatColor.AQUA + "Your Twitch channel has been set as: " + ChatColor.DARK_AQUA + args[1]);
-								}
-							}
+							tPatch.getThePlayer(p).setMediaLink("https://twitch.tv/"+args[1]);
+							p.sendMessage(ChatColor.AQUA + "Your Twitch channel has been set as: " + ChatColor.DARK_AQUA + args[1]);
 						}
 					}
 					else{
@@ -203,80 +205,116 @@ public class Commands implements CommandExecutor{
 		}
 		
 		//Town Chat mode
-		if(args[0].equalsIgnoreCase("tc")){
-			if(args.length==1){
-				if(sender instanceof Player){
-					Player p = (Player) sender;
-					for(int i = 0; i<tPatch.onlinePlayers.size(); i++){
-						if(tPatch.onlinePlayers.get(i).getName().equals(p.getName())){
-							thePatch tp = new thePatch();
-							if(tp.getResident(tPatch.onlinePlayers.get(i).getName()).hasTown()){
-								tPatch.onlinePlayers.get(i).setChatMode(2);
-								tPatch.onlinePlayers.get(i).setTextColor(ChatColor.AQUA);
-								p.sendMessage(ChatColor.AQUA + "Town Chat enabled.");
-							}
+		else if(args[0].equalsIgnoreCase("tc")){
+			if(sender instanceof Player){
+				thePatch tp = new thePatch();
+				Player p = (Player) sender;
+				//if the command is only "/gchat tc" put into Town Chat mode.
+				if(tp.getResident(tPatch.getThePlayer(p).getName()).hasTown()){
+					if(args.length == 1){
+						tPatch.getThePlayer(p).setChatMode(2);
+						tPatch.getThePlayer(p).setTextColor(ChatColor.AQUA);
+						p.sendMessage(ChatColor.AQUA + "Town Chat enabled!");
+					}
+					else {
+						String message = args[1];
+						for(int i = 2; i < args.length; i++){
+							message = message + " " + args[i];
+						}
+						chatControl c = new chatControl(tPatch.getThePlayer(p), message,minechatCompatability.mineChatStatus(p.getUniqueId()));
+						try {
+							c.sendTownMessage();
+						} catch (TownyException e) {
+							e.printStackTrace();
 						}
 					}
 				}
+				else{
+					p.sendMessage(ChatColor.AQUA + "No town found, please join a town to enable Town Chat!");
+				}
 			}
 		}
+		
 		//Nation Chat mode
-		if(args[0].equalsIgnoreCase("nc")){
-			if(args.length==1){
-				if(sender instanceof Player){
-					Player p = (Player) sender;
-					for(int i = 0; i<tPatch.onlinePlayers.size(); i++){
-						if(tPatch.onlinePlayers.get(i).getName().equals(p.getName())){
-							thePatch tp = new thePatch();
-							if(tp.getResident(tPatch.onlinePlayers.get(i).getName()).hasNation()){
-								tPatch.onlinePlayers.get(i).setChatMode(1);
-								tPatch.onlinePlayers.get(i).setTextColor(ChatColor.GOLD);
-								p.sendMessage(ChatColor.GOLD + "Nation Chat enabled.");
-							}
+		else if(args[0].equalsIgnoreCase("nc")){
+			if(sender instanceof Player){
+				thePatch tp = new thePatch();
+				Player p = (Player) sender;
+				//if the command is only "/gchat nc" put into Town Chat mode.
+				if(tp.getResident(tPatch.getThePlayer(p).getName()).hasNation()){
+					if(args.length == 1){
+						tPatch.getThePlayer(p).setChatMode(1);
+						tPatch.getThePlayer(p).setTextColor(ChatColor.GOLD);
+						p.sendMessage(ChatColor.AQUA + "Nation Chat enabled!");
+					}
+					else {
+						String message = args[1];
+						for(int i = 2; i < args.length; i++){
+							message = message + " " + args[i];
+						}
+						chatControl c = new chatControl(tPatch.getThePlayer(p), message,minechatCompatability.mineChatStatus(p.getUniqueId()));
+						try {
+							c.sendNationMessage();
+						} catch (TownyException e) {
+							e.printStackTrace();
 						}
 					}
+				}
+				else{
+					p.sendMessage(ChatColor.AQUA + "No town found, please join a town to enable Town Chat!");
 				}
 			}
 		}
 		
 		//Global Chat mode
-		if(args[0].equalsIgnoreCase("gc")){
-			if(args.length==1){
-				if(sender instanceof Player){
-					Player p = (Player) sender;
-					for(int i = 0; i<tPatch.onlinePlayers.size(); i++){
-						if(tPatch.onlinePlayers.get(i).getName().equals(p.getName())){
-							tPatch.onlinePlayers.get(i).setChatMode(0);
-							tPatch.onlinePlayers.get(i).setTextColor(ChatColor.WHITE);
-							p.sendMessage(ChatColor.WHITE + "Global Chat enabled.");
-						}
+		else if(args[0].equalsIgnoreCase("gc")){
+			if(sender instanceof Player){
+				Player p = (Player) sender;
+				if(args.length==1){
+					tPatch.getThePlayer(p).setChatMode(0);
+					tPatch.getThePlayer(p).setTextColor(ChatColor.WHITE);
+					p.sendMessage(ChatColor.WHITE + "Global Chat enabled.");
+				}
+				else {
+					String message = args[1];
+					for(int i = 2; i < args.length; i++){
+						message = message + " " + args[i];
+					}
+					chatControl c = new chatControl(tPatch.getThePlayer(p), message,minechatCompatability.mineChatStatus(p.getUniqueId()));
+					try {
+						c.sendGlobalMessage();
+					} catch (TownyException e) {
+						e.printStackTrace();
 					}
 				}
 			}
 		}
 		
+		
 		//Spy Chat mode
-		if(args[0].equalsIgnoreCase("spy")){
+		else if(args[0].equalsIgnoreCase("spy")){
 			if(args.length==1){
 				if(sender instanceof Player){
 					Player p = (Player) sender;
-					if(p.hasPermission("gchat.admin"))
-					for(int i = 0; i<tPatch.onlinePlayers.size(); i++){
-						if(tPatch.onlinePlayers.get(i).getName().equals(p.getName())){
-							if(tPatch.onlinePlayers.get(i).getSpyMode()){
-								tPatch.onlinePlayers.get(i).setSpyMode(false);
-								p.sendMessage(ChatColor.RED + "SpyMode disabled. Thats right, stop peaking.");
-							}
-							else{
-								tPatch.onlinePlayers.get(i).setSpyMode(true);
-								p.sendMessage(ChatColor.RED + "SpyMode enabled. You sneaky dog you.");
-							}
+					if(p.hasPermission("gchat.admin")){
+						if(tPatch.getThePlayer(p).getSpyMode()){
+							tPatch.getThePlayer(p).setSpyMode(false);
+							p.sendMessage(ChatColor.RED + "SpyMode disabled. Thats right, stop peaking.");
+						}
+						else{
+							tPatch.getThePlayer(p).setSpyMode(true);
+							p.sendMessage(ChatColor.RED + "SpyMode enabled. You sneaky dog you.");
 						}
 					}
 				}
 			}
 		}
+		else{
+			if(sender instanceof Player){
+				Player p = (Player) sender;
+				p.sendMessage(ChatColor.RED + "Incorrect /gchat command.");
+			}
+		}
 		return false;
 	}
-
 }

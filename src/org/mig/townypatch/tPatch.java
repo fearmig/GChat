@@ -79,7 +79,7 @@ public class tPatch extends JavaPlugin{
 		}
 	}
 	
-	public thePlayer getThePlayer(Player p){
+	public static thePlayer getThePlayer(Player p){
 		if(onlinePlayers!=null){
 			for(thePlayer tp: onlinePlayers){
 				if(tp.getName().equalsIgnoreCase(p.getName()))

@@ -113,8 +113,11 @@ public class chatControl{
 	
 	public void chat() throws TownyException {
 		//test message for bad words
-		if(!tw.testMessage(message)){
+		String temp = tw.testMessage(message);
+		if(temp != null){
 			player.spigot().sendMessage(new TextComponent( new ComponentBuilder("Please do not use that language in here").color(ChatColor.RED).create()));
+			adminGroupMessage(ChatColor.RED + player.getName() + " tried to curse by saying:");
+			adminGroupMessage(message);
 			return;
 		}
 		else{
@@ -131,76 +134,74 @@ public class chatControl{
 					}
 				}
 				if(!ignored){
+					
+					thePatch tp = new thePatch();
+					Resident r = tp.getResident(name);
+					
 					if(minechatCompatability.mineChatStatus(b.getPlayer().getUniqueId())){
 						//send reg message
-						b.getPlayer().sendMessage(nameColor + name +": " + messageColor + message);
-					}
-					else{
-						thePatch tp = new thePatch();
-						Resident r = tp.getResident(name);
-						//send json message
-						TextComponent [] fullM;
-						if(!mediaLink.equals("")){
-							fullM = new TextComponent[2];
-							
-							fullM[0] = new TextComponent( new ComponentBuilder(tp.getMayor(r) + tp.getSur(r) + name + ": ")
-									.color(nameColor).bold(boldA)
-									.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(group + "")
-									.color(groupColor).bold(boldG).append("\n" + mediaLink + "\n").color(ChatColor.DARK_PURPLE)
-									.append("Nation: ").color(ChatColor.DARK_GREEN).bold(false).append("" + tp.getNation(r) + "\n")
-									.color(ChatColor.WHITE).append("Town: ").color(ChatColor.DARK_GREEN).bold(false)
-									.append("" + tp.getTown(r)).color(ChatColor.WHITE).create())).event(new ClickEvent(ClickEvent.Action.OPEN_URL, mediaLink)).create());
-							
-							
-							fullM[1] = new TextComponent( new ComponentBuilder(message).color(messageColor).bold(boldM).create());
-							
-							//Send to players depending on chatmode.
-							if(chatMode==0){
-								b.getPlayer().spigot().sendMessage(fullM);
-							}
-							else if(chatMode==1){
-								if(tp.getResident(b.getName()).hasNation()){
-									if(tp.getResident(name).getTown().getNation().equals(tp.getResident(b.getName()).getTown().getNation())){
-										b.getPlayer().spigot().sendMessage(fullM);
-									}
-								}
-							}
-							else if(chatMode==2){
-								if(tp.getResident(b.getName()).hasTown()){
-									if(tp.getResident(name).getTown().equals(tp.getResident(b.getName()).getTown())){
-										b.getPlayer().spigot().sendMessage(fullM);
-									}
+						if(chatMode==0){
+							b.getPlayer().sendMessage(nameColor + name +": " + messageColor + message);
+						}
+						else if(chatMode==1){
+							if(r.hasNation() || b.getSpyMode()){
+								if(r.getTown().getNation().equals(tp.getResident(b.getName()).getTown().getNation())
+										 || b.getSpyMode()){
+									b.getPlayer().sendMessage(nameColor + name +": " + messageColor + message);
 								}
 							}
 						}
-						else{
-							fullM = new TextComponent[2];
-							
-								fullM[0] = new TextComponent( new ComponentBuilder(tp.getMayor(r) + tp.getSur(r) + name + ": ")
-									.color(nameColor).bold(boldA)
-									.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(group + "")
-									.color(groupColor).bold(boldG).append("\n").append("Nation: ").color(ChatColor.DARK_GREEN).bold(false)
-									.append("" + tp.getNation(r) + "\n").color(ChatColor.WHITE).append("Town: ")
-									.color(ChatColor.DARK_GREEN).bold(false).append("" + tp.getTown(r)).color(ChatColor.WHITE)
-									.create())).create());
-							
-							fullM[1] = new TextComponent( new ComponentBuilder(message).color(messageColor).bold(boldM).create());
-							//Send to players depending on chatmode.
-							if(chatMode==0){
-								b.getPlayer().spigot().sendMessage(fullM);
-							}
-							else if(chatMode==1){
-								if(tp.getResident(b.getName()).hasNation()){
-									if(tp.getResident(name).getTown().getNation().equals(tp.getResident(b.getName()).getTown().getNation())){
-										b.getPlayer().spigot().sendMessage(fullM);
-									}
+						else if(chatMode==2){
+							if(tp.getResident(b.getName()).hasTown() || b.getSpyMode()){
+								if(r.getTown().equals(tp.getResident(b.getName()).getTown())
+										 || b.getSpyMode()){
+									b.getPlayer().sendMessage(nameColor + name +": " + messageColor + message);
 								}
 							}
-							else if(chatMode==2){
-								if(tp.getResident(b.getName()).hasTown()){
-									if(tp.getResident(name).getTown().equals(tp.getResident(b.getName()).getTown())){
-										b.getPlayer().spigot().sendMessage(fullM);
-									}
+						}
+					}
+					else{
+						//send json message
+						TextComponent [] fullM;
+						fullM = new TextComponent[2];
+						if(!mediaLink.equals("")){
+							fullM[0] = new TextComponent( new ComponentBuilder(tp.getMayor(r) + tp.getSur(r) + name + ": ")
+								.color(nameColor).bold(boldA)
+								.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(group + "")
+								.color(groupColor).bold(boldG).append("\n" + mediaLink + "\n").color(ChatColor.DARK_PURPLE)
+								.append("Nation: ").color(ChatColor.DARK_GREEN).bold(false).append("" + tp.getNation(r) + "\n")
+								.color(ChatColor.WHITE).append("Town: ").color(ChatColor.DARK_GREEN).bold(false)
+								.append("" + tp.getTown(r)).color(ChatColor.WHITE).create())).event(new ClickEvent(ClickEvent.Action.OPEN_URL, mediaLink)).create());
+						}
+						else{
+							fullM[0] = new TextComponent( new ComponentBuilder(tp.getMayor(r) + tp.getSur(r) + name + ": ")
+								.color(nameColor).bold(boldA)
+								.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(group + "")
+								.color(groupColor).bold(boldG).append("\n").append("Nation: ").color(ChatColor.DARK_GREEN).bold(false)
+								.append("" + tp.getNation(r) + "\n").color(ChatColor.WHITE).append("Town: ")
+								.color(ChatColor.DARK_GREEN).bold(false).append("" + tp.getTown(r)).color(ChatColor.WHITE)
+								.create())).create());
+						}
+						
+						fullM[1] = new TextComponent( new ComponentBuilder(message).color(messageColor).bold(boldM).create());
+						
+						//Send to players depending on chatmode.
+						if(chatMode==0){
+							b.getPlayer().spigot().sendMessage(fullM);
+						}
+						else if(chatMode==1){
+							if(tp.getResident(b.getName()).hasNation() || b.getSpyMode()){
+								if(r.getTown().getNation().equals(tp.getResident(b.getName()).getTown().getNation())
+										 || b.getSpyMode()){
+									b.getPlayer().spigot().sendMessage(fullM);
+								}
+							}
+						}
+						else if(chatMode==2){
+							if(tp.getResident(b.getName()).hasTown() || b.getSpyMode()){
+								if(r.getTown().equals(tp.getResident(b.getName()).getTown())
+										 || b.getSpyMode()){
+									b.getPlayer().spigot().sendMessage(fullM);
 								}
 							}
 						}
@@ -209,6 +210,28 @@ public class chatControl{
 			}
 		}
 		tPatch.plugin.getLogger().info(name + ": " + message);
+	}
+	
+	//Methods to give temp attributes in the case of a command such as /tc Some text here
+	//This way the user can send a single message in a chat channel instead of having to switch
+	//between modes.
+	public void sendGlobalMessage() throws TownyException{
+		tPatch.plugin.getLogger().info("Hit1");
+		messageColor = ChatColor.WHITE;
+		chatMode = 0;
+		chat();
+	}
+	public void sendNationMessage() throws TownyException{
+		tPatch.plugin.getLogger().info("Hit2");
+		messageColor = ChatColor.GOLD;
+		chatMode = 1;
+		chat();
+	}
+	public void sendTownMessage() throws TownyException{
+		tPatch.plugin.getLogger().info("Hit3");
+		messageColor = ChatColor.AQUA;
+		chatMode = 2;
+		chat();
 	}
 	
 	//send message to group that has perm gchat.admin
