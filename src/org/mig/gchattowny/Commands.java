@@ -58,7 +58,7 @@ public class Commands implements CommandExecutor{
 					//turn on nationchat mode
 					nationChat(args, p);
 					break;
-				case "gc":
+				case "g":
 					//turn on globalchat mode
 					globalChat(args, p);
 					break;
@@ -328,11 +328,17 @@ public class Commands implements CommandExecutor{
 		p.sendMessage(ChatColor.AQUA + "/gchat off" + ChatColor.GOLD + " ~ Turn off Minechat Mode (non JSON text)");
 		p.sendMessage(ChatColor.AQUA + "/gchat set {}" + ChatColor.GOLD + " ~ do '/gchat set help' to learn more");
 		p.sendMessage(ChatColor.AQUA + "/gchat tc" + ChatColor.GOLD + " ~ Put yourself into Town Chat Mode");
-		p.sendMessage(ChatColor.AQUA + "/gchat tc some message here" + ChatColor.GOLD + " ~ Sends a single message in Town Chat Mode");
+		p.sendMessage(ChatColor.AQUA + "/tc" + ChatColor.GOLD + " ~ Put yourself into Town Chat Mode");
+		p.sendMessage(ChatColor.AQUA + "/gchat tc [message]" + ChatColor.GOLD + " ~ Sends a single message in Town Chat Mode");
+		p.sendMessage(ChatColor.AQUA + "/tc [message]" + ChatColor.GOLD + " ~ Sends a single message in Town Chat Mode");
 		p.sendMessage(ChatColor.AQUA + "/gchat nc" + ChatColor.GOLD + " ~ Put yourself into Nation Chat Mode");
-		p.sendMessage(ChatColor.AQUA + "/gchat nc some message here" + ChatColor.GOLD + " ~ Sends a single message in Nation Chat Mode");
-		p.sendMessage(ChatColor.AQUA + "/gchat gc" + ChatColor.GOLD + " ~ Put yourself into Global Chat Mode");
-		p.sendMessage(ChatColor.AQUA + "/gchat gc some message here" + ChatColor.GOLD + " ~ Sends a single message in Global Chat Mode");
+		p.sendMessage(ChatColor.AQUA + "/nc" + ChatColor.GOLD + " ~ Put yourself into Nation Chat Mode");
+		p.sendMessage(ChatColor.AQUA + "/gchat nc [message]" + ChatColor.GOLD + " ~ Sends a single message in Nation Chat Mode");
+		p.sendMessage(ChatColor.AQUA + "/nc [message]" + ChatColor.GOLD + " ~ Sends a single message in Nation Chat Mode");
+		p.sendMessage(ChatColor.AQUA + "/gchat g" + ChatColor.GOLD + " ~ Put yourself into Global Chat Mode");
+		p.sendMessage(ChatColor.AQUA + "/g" + ChatColor.GOLD + " ~ Put yourself into Global Chat Mode");
+		p.sendMessage(ChatColor.AQUA + "/gchat g [message]" + ChatColor.GOLD + " ~ Sends a single message in Global Chat Mode");
+		p.sendMessage(ChatColor.AQUA + "/g [message]" + ChatColor.GOLD + " ~ Sends a single message in Global Chat Mode");
 
 		if(p.hasPermission("gchat.admin")){
 			p.sendMessage(ChatColor.AQUA + "/gchat spy" + ChatColor.GOLD + " ~ Toggles on and off Spy Mode");

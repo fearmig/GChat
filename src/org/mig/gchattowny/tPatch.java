@@ -9,6 +9,9 @@ import java.util.UUID;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mig.gchattowny.commands.globalChatCommand;
+import org.mig.gchattowny.commands.nationChatCommand;
+import org.mig.gchattowny.commands.townChatCommand;
 
 
 public class tPatch extends JavaPlugin{
@@ -57,7 +60,12 @@ public class tPatch extends JavaPlugin{
 		}
 		plugin = this;
 		getServer().getPluginManager().registerEvents(this.l, this);
+		
+		//register commands
 		getCommand("gchat").setExecutor(new Commands());
+		getCommand("tc").setExecutor(new townChatCommand());
+		getCommand("nc").setExecutor(new nationChatCommand());
+		getCommand("g").setExecutor(new globalChatCommand());
 		
 		
 		for(Player p: getServer().getOnlinePlayers()){

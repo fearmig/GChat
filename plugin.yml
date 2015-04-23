@@ -2,7 +2,7 @@ name: GChatTowny
 description: Make Towny chat JSON
 author: FearMig
 website: www.github.com/fearmig
-version: 1.0
+version: 1.1
 main: org.mig.gchattowny.tPatch
 
 depend: [Essentials, Towny]
@@ -10,3 +10,10 @@ depend: [Essentials, Towny]
 commands:
   gchat:
     description: TownyPatch commands
+    aliases: [gc]
+  tc:
+    description: Go into Town chat mode.
+  g:
+    description: Go into Global chat mode.
+  nc:
+    description: /Go into Nation chat mode.
