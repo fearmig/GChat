@@ -16,7 +16,8 @@ badWordsTier1:
 #Enable the built in party system
 Parties_Enabled: false
   
-# List of groups and their properties
+# List of groups and their properties(Group names MUST be the same as 
+# your permission groups)
 # Possible colors: black, dark blue, dark green, teal, dark red,
 #     purple, gold, gray, dark gray, blue, lime green, aqua, red, pink,
 #     yellow, white.

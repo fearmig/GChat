@@ -1,19 +1,20 @@
 package org.mig.gchattowny;
 
+import java.util.List;
+
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import com.earth2me.essentials.Essentials;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.object.Resident;
 //should control just about everything that comes to the chat.
 public class chatControl{
+	
 	public String message;
 	public String name;
 	public String group;
@@ -29,7 +30,6 @@ public class chatControl{
 	public ChatColor groupColor;
 	public ChatColor nameColor;
 	
-	Essentials ess = (Essentials) Bukkit.getServer().getPluginManager().getPlugin("Essentials");
 	badWordHandler tw = new badWordHandler();
 	
 	public chatControl(){
@@ -127,12 +127,19 @@ public class chatControl{
 			//test for rank and send message
 			for(thePlayer b: tPatch.onlinePlayers){
 				boolean ignored = false;
+				
 				//test for ignored player
-				for(int i = 0; i < ess.getUser(b.getPlayer())._getIgnoredPlayers().size(); i++){
-					if(ess.getUser(b.getPlayer())._getIgnoredPlayers().get(i).equalsIgnoreCase(name)){
-						ignored=true;
+				if(tPatch.essen){
+					essenHandler e = new essenHandler();
+					List <String> ignoredPlayersList = e.getIgnored(b);
+					
+					for(int i = 0; i < ignoredPlayersList.size(); i++){
+						if(ignoredPlayersList.get(i).equalsIgnoreCase(name)){
+							ignored=true;
+						}
 					}
 				}
+				
 				if(!ignored){
 					
 					thePatch tp = new thePatch();

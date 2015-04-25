@@ -17,17 +17,27 @@ import org.mig.gchattowny.commands.townChatCommand;
 public class tPatch extends JavaPlugin{
 	public static tPatch plugin;
 	public static File players;
+	public static boolean essen = false;
+	
 	public final listenerClass l = new listenerClass(this);
 	public mySqlMan mysql = new mySqlMan(this);
 	public badWordHandler bwh = new badWordHandler();
+	
 	static ArrayList<UUID> mChatList = new ArrayList<UUID>();
 	static ArrayList<thePlayer> onlinePlayers = new ArrayList<thePlayer>();
+	
 	YamlConfiguration pConfig;
 	
 	public void onEnable() {
 		plugin = this;
 		getConfig().options().copyDefaults(true);
 		saveConfig();
+		
+		//test for essentials
+		if(getServer().getPluginManager().isPluginEnabled("Essentials")){
+			getLogger().info("Essentials detected");
+			essen = true;
+		}
 		
 		//set up MySql table and PlayersYML
 		players = new File("plugins/GChatTowny/players.yml");
