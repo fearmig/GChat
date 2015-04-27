@@ -9,9 +9,10 @@ import org.bukkit.entity.Player;
 import org.mig.gchattowny.chatControl;
 import org.mig.gchattowny.minechatCompatability;
 import org.mig.gchattowny.tPatch;
+
 import com.palmergames.bukkit.towny.exceptions.TownyException;
 
-public class globalChatCommand implements CommandExecutor{
+public class adminChatCommand implements CommandExecutor{
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command,
@@ -19,9 +20,9 @@ public class globalChatCommand implements CommandExecutor{
 		if(sender instanceof Player){
 			Player p = (Player) sender;
 			if(args.length==0){
-				tPatch.getThePlayer(p).setChatMode(0);
-				tPatch.getThePlayer(p).setTextColor(ChatColor.WHITE);
-				p.sendMessage(ChatColor.WHITE + "Global Chat enabled.");
+				tPatch.getThePlayer(p).setChatMode(3);
+				tPatch.getThePlayer(p).setTextColor(ChatColor.GREEN);
+				p.sendMessage(ChatColor.GREEN + "Admin Chat enabled.");
 			}
 			else {
 				String message = args[0];

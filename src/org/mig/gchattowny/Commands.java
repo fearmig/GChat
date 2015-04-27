@@ -7,6 +7,7 @@ import java.sql.SQLException;
 
 
 
+
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.command.Command;
@@ -36,19 +37,25 @@ public class Commands implements CommandExecutor{
 					break;
 				case "blockword":
 					//block word from being said in chat
-					blockWord(args, p);
+					if(p.hasPermission("gchat.admin"))
+						blockWord(args, p);
 					break;
 				case "unblockword":
 					//unblock word from being said in chat
-					unblockWord(args, p);
+					if(p.hasPermission("gchat.admin"))
+						unblockWord(args, p);
 					break;
 				case "importwords":
 					//import words into sql table
-					importWords(args, p);
+					if(p.hasPermission("gchat.admin"))
+						importWords(args, p);
 					break;
 				case "set":
 					//Home to medialinks (so far)
-					set(args, p);
+					if(p.hasPermission("gchat.medialinks"))
+						set(args, p);
+					else
+						p.sendMessage(ChatColor.GREEN + "If you would like a Social Media Link please visit our store on GorillaCraft.com");
 					break;
 				case "tc":
 					//turn on townchat mode
@@ -62,9 +69,15 @@ public class Commands implements CommandExecutor{
 					//turn on globalchat mode
 					globalChat(args, p);
 					break;
+				case "ac":
+					//turn on adminchat mode
+					if(p.hasPermission("gchat.adminchat"))
+						adminMode(args, p);
+					break;
 				case "spy":
 					//turn on spychat mode
-					spyMode(args, p);
+					if(p.hasPermission("gchat.admin"))
+						spyMode(args, p);
 					break;
 				case "help":
 					//send help message
@@ -78,7 +91,7 @@ public class Commands implements CommandExecutor{
 		}
 		return false;
 	}
-	
+
 	//turn minechat mode on
 	private void minechatOn(String args[], Player p){	
 		if(args.length==1){
@@ -113,59 +126,57 @@ public class Commands implements CommandExecutor{
 	
 	//add a word to the blocked words list
 	private void blockWord(String args [], Player p){ 
-		if(p.hasPermission("gchat.admin")){
-			p.sendMessage(ChatColor.WHITE + "The word '" + ChatColor.RED + args[1] + ChatColor.WHITE + "' has been blocked.");
-			if(args.length==2){
-				badWordHandler tw = new badWordHandler();
-				String word = args[1].replace('_', ' ');
-				int i = tw.findBadWord(word);
-				if(i==-1){
-					badWordHandler.badWords.add(word);
-					if(tPatch.plugin.getConfig().getBoolean("MySql")){
-						try {
-							tPatch.plugin.mysql.addWord(word, "1");
-						} catch (ClassNotFoundException | SQLException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-					else{
-						tPatch.plugin.getConfig().set("badWords", badWordHandler.badWords);
-						tPatch.plugin.saveConfig();
+		p.sendMessage(ChatColor.WHITE + "The word '" + ChatColor.RED + args[1] + ChatColor.WHITE + "' has been blocked.");
+		if(args.length==2){
+			badWordHandler tw = new badWordHandler();
+			String word = args[1].replace('_', ' ');
+			int i = tw.findBadWord(word);
+			if(i==-1){
+				badWordHandler.badWords.add(word);
+				if(tPatch.plugin.getConfig().getBoolean("MySql")){
+					try {
+						tPatch.plugin.mysql.addWord(word, "1");
+					} catch (ClassNotFoundException | SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 				}
+				else{
+					tPatch.plugin.getConfig().set("badWords", badWordHandler.badWords);
+					tPatch.plugin.saveConfig();
+				}
 			}
-			else{
-					p.sendMessage(ChatColor.AQUA + "Incorrect command format");
-			}
+		}
+		else{
+				p.sendMessage(ChatColor.AQUA + "Incorrect command format");
 		}
 	}
 
+
 	//remove a word from the blocked words list
-	private void unblockWord(String args [], Player p){ 
-		if(p.hasPermission("gchat.admin")){
-			p.sendMessage(ChatColor.WHITE + "The word '" + ChatColor.RED + args[1] + ChatColor.WHITE + "' has been unblocked.");
-			String word = args[1].replace('_', ' ');
-			if(args.length==2){
-				badWordHandler tw = new badWordHandler();
-				int i = tw.findBadWord(word);
-				if(i>=0){
-					if(tPatch.plugin.getConfig().getBoolean("MySql")){
-						try {
-							tPatch.plugin.mysql.removeWord(word);
-						} catch (ClassNotFoundException | SQLException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+	private void unblockWord(String args [], Player p){
+		p.sendMessage(ChatColor.WHITE + "The word '" + ChatColor.RED + args[1] + ChatColor.WHITE + "' has been unblocked.");
+		String word = args[1].replace('_', ' ');
+		if(args.length==2){
+			badWordHandler tw = new badWordHandler();
+			int i = tw.findBadWord(word);
+			if(i>=0){
+				if(tPatch.plugin.getConfig().getBoolean("MySql")){
+					try {
+						tPatch.plugin.mysql.removeWord(word);
+					} catch (ClassNotFoundException | SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-					else{
-						tPatch.plugin.getConfig().set("badWords", badWordHandler.badWords);
-						tPatch.plugin.saveConfig();
-					}
-					badWordHandler.badWords.remove(i);	
 				}
+				else{
+					tPatch.plugin.getConfig().set("badWords", badWordHandler.badWords);
+					tPatch.plugin.saveConfig();
+				}
+				badWordHandler.badWords.remove(i);	
 			}
 		}
+		
 		else{
 			p.sendMessage(ChatColor.AQUA + "Incorrect command format");
 		}
@@ -174,48 +185,37 @@ public class Commands implements CommandExecutor{
 	//Covert yml badwordslist to MySQL
 	private void importWords(String args[], Player p){
 		badWordHandler bwh = new badWordHandler();
-		if(p.hasPermission("gchat.admin")){
-			if(args.length==1){
-				bwh.fillList();
-				for(int i = 0; i<badWordHandler.badWords.size(); i++){
-					tPatch.plugin.getLogger().info(badWordHandler.badWords.get(i));
-					try {
-						tPatch.plugin.mysql.addWord(badWordHandler.badWords.get(i),badWordHandler.wordTier.get(i));
-					} catch (ClassNotFoundException | SQLException e) {
-						e.printStackTrace();
-					}
+		if(args.length==1){
+			bwh.fillList();
+			for(int i = 0; i<badWordHandler.badWords.size(); i++){
+				tPatch.plugin.getLogger().info(badWordHandler.badWords.get(i));
+				try {
+					tPatch.plugin.mysql.addWord(badWordHandler.badWords.get(i),badWordHandler.wordTier.get(i));
+				} catch (ClassNotFoundException | SQLException e) {
+					e.printStackTrace();
 				}
-				p.sendMessage(ChatColor.AQUA + "Words have been coverted from config.yml to MySQL.");
 			}
+			p.sendMessage(ChatColor.AQUA + "Words have been coverted from config.yml to MySQL.");
 		}
 	}
 			
-	//Set Media link twitter
+	//Set Media link
 	private void set(String args[], Player p){
-		if(p.hasPermission("gchat.medialink")){
-			if(args.length==3){
-				if(args[1]!=null){
-					if(args[1].equalsIgnoreCase("twitter")){
-						tPatch.getThePlayer(p).setMediaLink("https://twitter.com/"+args[2]);
-						p.sendMessage(ChatColor.AQUA + "Your Twitter username has been set as: " + ChatColor.DARK_AQUA + args[1]);
-					}
-					else if(args[1].equalsIgnoreCase("youtube")){
-						tPatch.getThePlayer(p).setMediaLink("https://youtube.com/user/"+args[2]);
-						p.sendMessage(ChatColor.AQUA + "Your Youtube username has been set as: " + ChatColor.DARK_AQUA + args[1]);
-					}
-					else if(args[1].equalsIgnoreCase("twitch")){
-						tPatch.getThePlayer(p).setMediaLink("https://twitch.tv/"+args[2]);
-						p.sendMessage(ChatColor.AQUA + "Your Twitch channel has been set as: " + ChatColor.DARK_AQUA + args[1]);
-					}
-					else if(args[1].equalsIgnoreCase("help")){
-						p.sendMessage(ChatColor.AQUA + "/gchat set twitter {twitterName}" + ChatColor.GOLD + " ~ set Twitter media link. Do not include @");
-						p.sendMessage(ChatColor.AQUA + "/gchat set youtube {channelName}" + ChatColor.GOLD + " ~ set Youtube media link. Only include what is after youtube.com/user/");
-						p.sendMessage(ChatColor.AQUA + "/gchat set twitch {channelName}" + ChatColor.GOLD + " ~ set Twitch media link. Only include channel name.");
-					}
+		if(args.length==3){
+			if(args[1]!=null){
+				if(args[1].equalsIgnoreCase("twitter")){
+					tPatch.getThePlayer(p).setMediaLink("https://twitter.com/"+args[2]);
+					p.sendMessage(ChatColor.AQUA + "Your Twitter username has been set as: " + ChatColor.DARK_AQUA + args[1]);
 				}
-			}
-			else{
-				if(args[1].equalsIgnoreCase("help")){
+				else if(args[1].equalsIgnoreCase("youtube")){
+					tPatch.getThePlayer(p).setMediaLink("https://youtube.com/user/"+args[2]);
+					p.sendMessage(ChatColor.AQUA + "Your Youtube username has been set as: " + ChatColor.DARK_AQUA + args[1]);
+				}
+				else if(args[1].equalsIgnoreCase("twitch")){
+					tPatch.getThePlayer(p).setMediaLink("https://twitch.tv/"+args[2]);
+					p.sendMessage(ChatColor.AQUA + "Your Twitch channel has been set as: " + ChatColor.DARK_AQUA + args[1]);
+				}
+				else if(args[1].equalsIgnoreCase("help")){
 					p.sendMessage(ChatColor.AQUA + "/gchat set twitter {twitterName}" + ChatColor.GOLD + " ~ set Twitter media link. Do not include @");
 					p.sendMessage(ChatColor.AQUA + "/gchat set youtube {channelName}" + ChatColor.GOLD + " ~ set Youtube media link. Only include what is after youtube.com/user/");
 					p.sendMessage(ChatColor.AQUA + "/gchat set twitch {channelName}" + ChatColor.GOLD + " ~ set Twitch media link. Only include channel name.");
@@ -223,7 +223,11 @@ public class Commands implements CommandExecutor{
 			}
 		}
 		else{
-			p.sendMessage(ChatColor.GREEN + "If you would like a Social Media Link please visit our store on GorillaCraft.com");
+			if(args[1].equalsIgnoreCase("help")){
+				p.sendMessage(ChatColor.AQUA + "/gchat set twitter {twitterName}" + ChatColor.GOLD + " ~ set Twitter media link. Do not include @");
+				p.sendMessage(ChatColor.AQUA + "/gchat set youtube {channelName}" + ChatColor.GOLD + " ~ set Youtube media link. Only include what is after youtube.com/user/");
+				p.sendMessage(ChatColor.AQUA + "/gchat set twitch {channelName}" + ChatColor.GOLD + " ~ set Twitch media link. Only include channel name.");
+			}
 		}
 	}
 		
@@ -303,6 +307,27 @@ public class Commands implements CommandExecutor{
 			}
 		}
 	}
+
+	//Admin Chat mode
+	private void adminMode(String[] args, Player p) {
+		if(args.length==1){
+			tPatch.getThePlayer(p).setChatMode(3);
+			tPatch.getThePlayer(p).setTextColor(ChatColor.GREEN);
+			p.sendMessage(ChatColor.GREEN + "Admin Chat enabled.");
+		}
+		else {
+			String message = args[1];
+			for(int i = 2; i < args.length; i++){
+				message = message + " " + args[i];
+			}
+			chatControl c = new chatControl(tPatch.getThePlayer(p), message,minechatCompatability.mineChatStatus(p.getUniqueId()));
+			try {
+				c.sendGlobalMessage();
+			} catch (TownyException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 	
 	//Spy Chat mode
 	private void spyMode(String args[], Player p){
@@ -341,6 +366,10 @@ public class Commands implements CommandExecutor{
 		p.sendMessage(ChatColor.AQUA + "/g [message]" + ChatColor.GOLD + " ~ Sends a single message in Global Chat Mode");
 
 		if(p.hasPermission("gchat.admin")){
+			p.sendMessage(ChatColor.AQUA + "/gchat ac" + ChatColor.GOLD + " ~ Put yourself into Admin Chat Mode");
+			p.sendMessage(ChatColor.AQUA + "/ac" + ChatColor.GOLD + " ~ Put yourself into Admin Chat Mode");
+			p.sendMessage(ChatColor.AQUA + "/gchat ac [message]" + ChatColor.GOLD + " ~ Sends a single message in Admin Chat Mode");
+			p.sendMessage(ChatColor.AQUA + "/ac [message]" + ChatColor.GOLD + " ~ Sends a single message in Admin Chat Mode");
 			p.sendMessage(ChatColor.AQUA + "/gchat spy" + ChatColor.GOLD + " ~ Toggles on and off Spy Mode");
 			p.sendMessage(ChatColor.AQUA + "/gchat blockword {word}" + ChatColor.GOLD + " ~ Add word to blocked word list");
 			p.sendMessage(ChatColor.AQUA + "/gchat unblockword {word}" + ChatColor.GOLD + " ~ remove word from blocked word list");

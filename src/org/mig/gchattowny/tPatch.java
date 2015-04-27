@@ -9,6 +9,7 @@ import java.util.UUID;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mig.gchattowny.commands.adminChatCommand;
 import org.mig.gchattowny.commands.globalChatCommand;
 import org.mig.gchattowny.commands.nationChatCommand;
 import org.mig.gchattowny.commands.townChatCommand;
@@ -76,6 +77,7 @@ public class tPatch extends JavaPlugin{
 		getCommand("tc").setExecutor(new townChatCommand());
 		getCommand("nc").setExecutor(new nationChatCommand());
 		getCommand("g").setExecutor(new globalChatCommand());
+		getCommand("ac").setExecutor(new adminChatCommand());
 		
 		
 		for(Player p: getServer().getOnlinePlayers()){

@@ -15,6 +15,7 @@ public class thePlayer {
 	private String name;
 	private String group;
 	private String mediaLink;
+	private String previousMessage = "";
 	private ChatColor nameColor;
 	private ChatColor textColor = ChatColor.WHITE;
 	private ChatColor groupColor;
@@ -145,7 +146,17 @@ public class thePlayer {
 		groupBold = n;
 	}
 	
-	//Using ints for chatmode, 0 = Global, 1 = Nation, 2 = Town
+	//set players previous message for anti-spam
+	public void setPrevMess(String s){
+		previousMessage = s;
+	}
+	
+	//get players previous message for anti-spam
+	public String getPrevMess(){
+		return previousMessage;
+	}
+	
+	//Using ints for chatmode, 0 = Global, 1 = Nation, 2 = Town, 3 = Admin
 	public void setChatMode(int i){
 		chatMode = i;
 	}

@@ -29,7 +29,7 @@ public class nationChatCommand implements CommandExecutor{
 					p.sendMessage(ChatColor.AQUA + "Nation Chat enabled!");
 				}
 				else {
-					String message = args[1];
+					String message = args[0];
 					for(int i = 2; i < args.length; i++){
 						message = message + " " + args[i];
 					}

@@ -18,3 +18,5 @@ commands:
     description: Go into Global chat mode.
   nc:
     description: /Go into Nation chat mode.
+  ac:
+    description: /Go into Admin chat mode.
