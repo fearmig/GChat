@@ -1,4 +1,4 @@
-package org.mig.gchattowny.commands;
+package org.mig.gchat.commands.towny;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -6,12 +6,11 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.mig.gchattowny.chatControl;
-import org.mig.gchattowny.minechatCompatability;
-import org.mig.gchattowny.tPatch;
-import org.mig.gchattowny.thePatch;
+import org.mig.gchat.chat.ChatControl;
+import org.mig.gchat.utils.GChat;
+import org.mig.gchat.utils.minechatCompatability;
+import org.mig.gchat.utils.compatability.TownyHandler;
 
-import com.palmergames.bukkit.towny.exceptions.TownyException;
 
 public class townChatCommand implements CommandExecutor{
 
@@ -20,12 +19,12 @@ public class townChatCommand implements CommandExecutor{
 			String label, String[] args) {
 		if(sender instanceof Player){
 			Player p = (Player) sender;
-			thePatch tp = new thePatch();
+			TownyHandler th = new TownyHandler(p.getName());
 			//if the command is only "/gchat tc" put into Town Chat mode.
-			if(tp.getResident(tPatch.getThePlayer(p).getName()).hasTown()){
+			if(th.inTown()){
 				if(args.length == 0){
-					tPatch.getThePlayer(p).setChatMode(2);
-					tPatch.getThePlayer(p).setTextColor(ChatColor.AQUA);
+					GChat.getThePlayer(p).setChatMode(2);
+					GChat.getThePlayer(p).setTextColor(ChatColor.AQUA);
 					p.sendMessage(ChatColor.AQUA + "Town Chat enabled!");
 				}
 				else {
@@ -33,12 +32,9 @@ public class townChatCommand implements CommandExecutor{
 					for(int i = 2; i < args.length; i++){
 						message = message + " " + args[i];
 					}
-					chatControl c = new chatControl(tPatch.getThePlayer(p), message,minechatCompatability.mineChatStatus(p.getUniqueId()));
-					try {
-						c.sendTownMessage();
-					} catch (TownyException e) {
-						e.printStackTrace();
-					}
+					ChatControl c = new ChatControl(GChat.getThePlayer(p), message,minechatCompatability.mineChatStatus(p.getUniqueId()));
+					
+					c.startSingleTownMessage();
 				}
 			}
 			else{

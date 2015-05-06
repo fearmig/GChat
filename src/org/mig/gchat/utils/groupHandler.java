@@ -1,15 +1,16 @@
-package org.mig.gchattowny;
+package org.mig.gchat.utils;
 
 
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 
 public class groupHandler {
-	
+	private GChat main = (GChat) Bukkit.getServer().getPluginManager().getPlugin("GChatTowny");
 	public Map<String, Object> getGroups(){
-		return ((MemorySection) tPatch.plugin.getConfig().get("Groups")).getValues(false);
+		return ((MemorySection) main.getConfig().get("Groups")).getValues(false);
 	}
 	
 	public String getGroup(Player p){

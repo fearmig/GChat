@@ -1,4 +1,4 @@
-package org.mig.gchattowny;
+package org.mig.gchat.utils;
 
 import java.util.ArrayList;
 import java.util.UUID;

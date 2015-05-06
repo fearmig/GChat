@@ -1,4 +1,4 @@
-package org.mig.gchattowny;
+package org.mig.gchat.utils.compatability;
 
 import java.util.List;
 

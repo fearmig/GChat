@@ -1,8 +1,9 @@
-package org.mig.gchattowny;
+package org.mig.gchat.utils;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,16 +12,15 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-
-import com.palmergames.bukkit.towny.exceptions.TownyException;
+import org.mig.gchat.chat.ChatControl;
 
 
 public class listenerClass implements Listener{
 	private static ArrayList<Player> newPlayerList = new ArrayList<Player>();
-	private final tPatch main;
+	private final GChat main;
 	
-	public listenerClass(tPatch g){
-		this.main = g;
+	public listenerClass(){
+		this.main = (GChat) Bukkit.getServer().getPluginManager().getPlugin("GChatTowny");
 	}
 	
 	@EventHandler
@@ -35,8 +35,8 @@ public class listenerClass implements Listener{
 				main.getConfig().set("MySql", false);
 			}
 		}
-		thePlayer tp = new thePlayer(event.getPlayer(),tPatch.plugin);
-		tPatch.onlinePlayers.add(tp);
+		thePlayer tp = new thePlayer(event.getPlayer());
+		GChat.onlinePlayers.add(tp);
 		
 		//Set display for Player Tab List
 		final Player p = event.getPlayer();
@@ -52,9 +52,9 @@ public class listenerClass implements Listener{
 	}
 	
 	@EventHandler
-	public void onChat(AsyncPlayerChatEvent event) throws TownyException {
-		thePatch.compileList();
-		chatControl c = new chatControl(tPatch.getThePlayer(event.getPlayer()), event.getMessage(),minechatCompatability.mineChatStatus(event.getPlayer().getUniqueId()));
+	public void onChat(AsyncPlayerChatEvent event){
+		//thePatch.compileList();
+		ChatControl c = new ChatControl(GChat.getThePlayer(event.getPlayer()), event.getMessage(),minechatCompatability.mineChatStatus(event.getPlayer().getUniqueId()));
 		c.chat();
 				event.setCancelled(true);
 	}
@@ -62,12 +62,12 @@ public class listenerClass implements Listener{
 	@EventHandler
 	public void onLeave(PlayerQuitEvent event){
 		minechatCompatability.mineChatOff(event.getPlayer().getUniqueId());
-		tPatch.onlinePlayers.remove(tPatch.getThePlayer(event.getPlayer()));
+		GChat.onlinePlayers.remove(GChat.getThePlayer(event.getPlayer()));
 		event.setQuitMessage(null);
 	}
 	@EventHandler
 	public void onCommand(PlayerCommandPreprocessEvent event){
-		chatControl c = new chatControl();
+		ChatControl c = new ChatControl();
 		c.adminGroupMessage(event.getPlayer().getName() + ": " + event.getMessage());
 		for(int i = 0; i < newPlayerList.size(); i++){
 			if(newPlayerList.get(i).getUniqueId().equals(event.getPlayer().getUniqueId())&& event.getMessage().equals("/spawn")){

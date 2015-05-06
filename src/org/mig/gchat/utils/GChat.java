@@ -1,4 +1,4 @@
-package org.mig.gchattowny;
+package org.mig.gchat.utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,28 +9,28 @@ import java.util.UUID;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.mig.gchattowny.commands.adminChatCommand;
-import org.mig.gchattowny.commands.globalChatCommand;
-import org.mig.gchattowny.commands.nationChatCommand;
-import org.mig.gchattowny.commands.townChatCommand;
+import org.mig.gchat.chat.filter.badWordHandler;
+import org.mig.gchat.commands.Commands;
+import org.mig.gchat.commands.adminChatCommand;
+import org.mig.gchat.commands.globalChatCommand;
+import org.mig.gchat.commands.towny.nationChatCommand;
+import org.mig.gchat.commands.towny.townChatCommand;
 
 
-public class tPatch extends JavaPlugin{
-	public static tPatch plugin;
+public class GChat extends JavaPlugin{
 	public static File players;
 	public static boolean essen = false;
 	
-	public final listenerClass l = new listenerClass(this);
+	public final listenerClass l = new listenerClass();
 	public mySqlMan mysql = new mySqlMan(this);
 	public badWordHandler bwh = new badWordHandler();
 	
 	static ArrayList<UUID> mChatList = new ArrayList<UUID>();
-	static ArrayList<thePlayer> onlinePlayers = new ArrayList<thePlayer>();
+	public static ArrayList<thePlayer> onlinePlayers = new ArrayList<thePlayer>();
 	
 	YamlConfiguration pConfig;
 	
 	public void onEnable() {
-		plugin = this;
 		getConfig().options().copyDefaults(true);
 		saveConfig();
 		
@@ -69,7 +69,7 @@ public class tPatch extends JavaPlugin{
 			pConfig = YamlConfiguration.loadConfiguration(players);
 			bwh.fillList();
 		}
-		plugin = this;
+		//plugin = this;
 		getServer().getPluginManager().registerEvents(this.l, this);
 		
 		//register commands
@@ -81,7 +81,7 @@ public class tPatch extends JavaPlugin{
 		
 		
 		for(Player p: getServer().getOnlinePlayers()){
-			thePlayer tp = new thePlayer(p, this);
+			thePlayer tp = new thePlayer(p);
 			if(!onlinePlayers.contains(tp)){
 				onlinePlayers.add(tp);
 			}

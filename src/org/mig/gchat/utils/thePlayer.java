@@ -1,4 +1,4 @@
-package org.mig.gchattowny;
+package org.mig.gchat.utils;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import net.md_5.bungee.api.ChatColor;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class thePlayer {
@@ -24,11 +25,11 @@ public class thePlayer {
 	private boolean textBold;
 	private boolean groupBold;
 	private int chatMode = 0;
-	private final tPatch main;
+	private final GChat main;
 	public List<UUID> onlinePlayers;
 	
-	public thePlayer(Player p, tPatch m){
-		main = m;
+	public thePlayer(Player p){
+		main = (GChat) Bukkit.getServer().getPluginManager().getPlugin("GChatTowny");;
 		player = p;
 		
 		if(main.getConfig().getBoolean("MySql")){
@@ -76,13 +77,37 @@ public class thePlayer {
 			
 		}
 	}
-	public void setAttributes(){
-		chatControl c = new chatControl();
-		nameColor = c.getColor((String)tPatch.plugin.getConfig().get("Groups."+group+".nameColor"));
-		groupColor = c.getColor((String)tPatch.plugin.getConfig().get("Groups."+group+".groupNameColor"));
-		nameBold = (boolean)tPatch.plugin.getConfig().get("Groups."+group+".nameBold");
-		textBold = (boolean)tPatch.plugin.getConfig().get("Groups."+group+".textBold");
-		groupBold = (boolean) tPatch.plugin.getConfig().get("Groups."+group+".groupBold");
+	
+	private void setAttributes(){
+		nameColor = getColor((String)main.getConfig().get("Groups."+group+".nameColor"));
+		groupColor = getColor((String)main.getConfig().get("Groups."+group+".groupNameColor"));
+		nameBold = (boolean)main.getConfig().get("Groups."+group+".nameBold");
+		textBold = (boolean)main.getConfig().get("Groups."+group+".textBold");
+		groupBold = (boolean)main.getConfig().get("Groups."+group+".groupBold");
+	}
+	
+	//return color associated with config entry
+	private ChatColor getColor(String color){
+		switch(color){
+			case "black": return ChatColor.BLACK;
+			case "dark blue": return ChatColor.DARK_BLUE;
+			case "dark green": return ChatColor.DARK_GREEN;
+			case "teal": return ChatColor.AQUA;
+			case "dark red": return ChatColor.DARK_RED;
+			case "purple": return ChatColor.DARK_PURPLE;
+			case "gold": return ChatColor.GOLD;
+			case "gray": return ChatColor.GRAY;
+			case "dark gray": return ChatColor.DARK_GRAY;
+			case "blue": return ChatColor.BLUE;
+			case "lime green": return ChatColor.GREEN;
+			case "aqua": return ChatColor.DARK_AQUA;
+			case "red": return ChatColor.RED;
+			case "pink": return ChatColor.LIGHT_PURPLE;
+			case "yellow": return ChatColor.YELLOW;
+			case "white": return ChatColor.WHITE;
+			case "bold": return ChatColor.BOLD;
+			default: return ChatColor.WHITE;
+		}
 	}
 	
 	public String getGroup(){
@@ -195,7 +220,7 @@ public class thePlayer {
 	}
 	public void savePlayersYML(){
 		try {
-			  main.pConfig.save(tPatch.players);
+			  main.pConfig.save(GChat.players);
 			} catch(IOException e) {
 				main.getLogger().info("Error: " + e);
 			}

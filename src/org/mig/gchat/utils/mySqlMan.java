@@ -1,4 +1,4 @@
-package org.mig.gchattowny;
+package org.mig.gchat.utils;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -6,14 +6,16 @@ import java.sql.Statement;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
+import org.mig.gchat.chat.filter.badWordHandler;
 
 import code.husky.mysql.MySQL;
 
 public class mySqlMan {
-	private final tPatch main;
+	private final GChat main;
 	private MySQL db;
+	private badWordHandler bw = new badWordHandler();
 	
-	public mySqlMan(tPatch g){
+	public mySqlMan(GChat g){
 		this.main = g;
 	}
 	
@@ -121,13 +123,11 @@ public class mySqlMan {
 		Statement statement = this.db.getConnection().createStatement();
 		ResultSet rs = statement.executeQuery("SELECT * FROM `badwords`;");
 		if(rs!=null){
-			if(badWordHandler.badWords!=null)
-				badWordHandler.badWords.clear();
-			if(badWordHandler.wordTier!=null)
-				badWordHandler.wordTier.clear();
+			if(bw.getBadWordList()!=null)
+				bw.clearList();
 			while(rs.next()){
-				badWordHandler.badWords.add(rs.getString("BlockedWord"));
-				badWordHandler.wordTier.add(rs.getString("Tier"));
+				bw.addBadWord(rs.getString("BlockedWord"));
+				//badWordHandler.wordTier.add(rs.getString("Tier"));
 			}
 		}
 	}
@@ -154,7 +154,7 @@ public class mySqlMan {
 		if(!this.db.checkConnection())
 			this.db.openConnection();
 		Statement statement = this.db.getConnection().createStatement();
-		if(badWordHandler.badWords.contains(w)){
+		if(bw.isBadWord(w)){
 			statement.executeUpdate("DELETE FROM `badwords` WHERE `BlockedWord` ='"+w+"' ");
 			statement.close();
 		}

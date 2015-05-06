@@ -1,4 +1,4 @@
-package org.mig.gchattowny.commands;
+package org.mig.gchat.commands.towny;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -6,12 +6,10 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.mig.gchattowny.chatControl;
-import org.mig.gchattowny.minechatCompatability;
-import org.mig.gchattowny.tPatch;
-import org.mig.gchattowny.thePatch;
-
-import com.palmergames.bukkit.towny.exceptions.TownyException;
+import org.mig.gchat.chat.ChatControl;
+import org.mig.gchat.utils.GChat;
+import org.mig.gchat.utils.minechatCompatability;
+import org.mig.gchat.utils.compatability.TownyHandler;
 
 public class nationChatCommand implements CommandExecutor{
 
@@ -20,12 +18,12 @@ public class nationChatCommand implements CommandExecutor{
 			String label, String[] args) {
 		if(sender instanceof Player){
 			Player p = (Player) sender;
-			thePatch tp = new thePatch();
+			TownyHandler th = new TownyHandler(p.getName());
 			//if the command is only "/gchat nc" put into Town Chat mode.
-			if(tp.getResident(tPatch.getThePlayer(p).getName()).hasNation()){
+			if(th.inNation()){
 				if(args.length == 0){
-					tPatch.getThePlayer(p).setChatMode(1);
-					tPatch.getThePlayer(p).setTextColor(ChatColor.GOLD);
+					GChat.getThePlayer(p).setChatMode(1);
+					GChat.getThePlayer(p).setTextColor(ChatColor.GOLD);
 					p.sendMessage(ChatColor.AQUA + "Nation Chat enabled!");
 				}
 				else {
@@ -33,12 +31,9 @@ public class nationChatCommand implements CommandExecutor{
 					for(int i = 2; i < args.length; i++){
 						message = message + " " + args[i];
 					}
-					chatControl c = new chatControl(tPatch.getThePlayer(p), message,minechatCompatability.mineChatStatus(p.getUniqueId()));
-					try {
-						c.sendNationMessage();
-					} catch (TownyException e) {
-						e.printStackTrace();
-					}
+					ChatControl c = new ChatControl(GChat.getThePlayer(p), message,minechatCompatability.mineChatStatus(p.getUniqueId()));
+					
+					c.startSingleNationMessage();
 				}
 			}
 			else{
