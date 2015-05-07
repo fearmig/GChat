@@ -26,17 +26,18 @@ public class TownyChat{
 	private ChatColor nameColor;
 	private TownyHandler th;
 	
-	public TownyChat(thePlayer tp){
-		
-		name = tplayer.getName();
-		group = tplayer.getGroup();
-		mediaLink = tplayer.getMediaLink();
-		nameColor = tplayer.getNameColor();
-		boldA = tplayer.getNameBold();
-		messageColor = tplayer.getTextColor();
-		boldM = tplayer.getTextBold();
-		groupColor = tplayer.getGroupColor();
-		boldG = tplayer.getGroupBold();
+	public TownyChat(thePlayer tp, String m){
+		tplayer = tp;
+		name = tp.getName();
+		group = tp.getGroup();
+		mediaLink = tp.getMediaLink();
+		nameColor = tp.getNameColor();
+		boldA = tp.getNameBold();
+		messageColor = tp.getTextColor();
+		boldM = tp.getTextBold();
+		groupColor = tp.getGroupColor();
+		boldG = tp.getGroupBold();
+		message = m;
 	}
 	
 	public TextComponent[] buildMessage(){

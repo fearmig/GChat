@@ -1,12 +1,11 @@
-name: GChatTowny
-description: Make Towny chat JSON
+name: GChat
+description: Make chat into JSON awesomeness and more
 author: FearMig
 website: www.github.com/fearmig
 version: 1.1
-main: org.mig.gchattowny.tPatch
+main: org.mig.gchat.utils.GChat
 
-depend: [Towny]
-softdepend: [Essentials]
+softdepend: [Essentials,Towny]
 
 commands:
   gchat:

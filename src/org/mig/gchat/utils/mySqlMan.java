@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.bukkit.entity.Player;
 import org.mig.gchat.chat.filter.badWordHandler;
+import org.mig.gchat.groups.Groups;
 
 import code.husky.mysql.MySQL;
 
@@ -86,8 +87,8 @@ public class mySqlMan {
 		String mediaLink = "";
 		String uuid = "" + p.getUniqueId(); 
 		
-		groupHandler gh = new groupHandler();
-		group = gh.getGroup(p);
+		Groups g = new Groups();
+		group = g.getGroup(p);
 		
 		if(!this.db.checkConnection())
 			this.db.openConnection();

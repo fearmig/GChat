@@ -31,7 +31,7 @@ public class ChatControl{
 	private ChatColor nameColor;
 	private List<Player> recipients;
 	
-	private GChat main = (GChat) Bukkit.getServer().getPluginManager().getPlugin("GChatTowny");
+	private GChat main = GChat.getMain();
 	
 	//spam blockers
 	private badWordHandler tw = new badWordHandler();
@@ -134,12 +134,12 @@ public class ChatControl{
 			//build the message
 			TextComponent[] fullM;
 			if(Bukkit.getServer().getPluginManager().isPluginEnabled("Towny")){
-				obj = new TownyChat(tplayer);
+				obj = new TownyChat(tplayer, message);
 				messageColor = ChatColor.WHITE;
 				fullM = ((TownyChat) obj).buildMessage();
 			}
 			else{
-				obj = new DefaultChat(tplayer);
+				obj = new DefaultChat(tplayer, message);
 				fullM = ((DefaultChat) obj).buildMessage();
 			}
 			

@@ -22,7 +22,7 @@ public class DefaultChat {
 	private ChatColor groupColor;
 	private ChatColor nameColor;
 	
-	public DefaultChat(thePlayer tp){
+	public DefaultChat(thePlayer tp, String m){
 		
 		name = tplayer.getName();
 		group = tplayer.getGroup();
@@ -33,6 +33,7 @@ public class DefaultChat {
 		boldM = tplayer.getTextBold();
 		groupColor = tplayer.getGroupColor();
 		boldG = tplayer.getGroupBold();
+		message = m;
 	}
 	
 	

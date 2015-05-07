@@ -18,21 +18,26 @@ import org.mig.gchat.commands.towny.townChatCommand;
 
 
 public class GChat extends JavaPlugin{
-	public static File players;
+	private static GChat main;
+	
 	public static boolean essen = false;
 	
 	public final listenerClass l = new listenerClass();
 	public mySqlMan mysql = new mySqlMan(this);
-	public badWordHandler bwh = new badWordHandler();
+	public badWordHandler bwh;
 	
 	static ArrayList<UUID> mChatList = new ArrayList<UUID>();
 	public static ArrayList<thePlayer> onlinePlayers = new ArrayList<thePlayer>();
 	
-	YamlConfiguration pConfig;
+	
+	
+	public static File players;
+	public YamlConfiguration pConfig;
 	
 	public void onEnable() {
 		getConfig().options().copyDefaults(true);
-		saveConfig();
+		saveDefaultConfig();
+		main = this;
 		
 		//test for essentials
 		if(getServer().getPluginManager().isPluginEnabled("Essentials")){
@@ -42,7 +47,7 @@ public class GChat extends JavaPlugin{
 		
 		//set up MySql table and PlayersYML
 		players = new File("plugins/GChatTowny/players.yml");
-		
+		bwh = new badWordHandler();
 		if(getConfig().getBoolean("MySql")){
 			try {
 				this.mysql.setupDB();
@@ -86,7 +91,7 @@ public class GChat extends JavaPlugin{
 				onlinePlayers.add(tp);
 			}
 		}
-		
+		main = this;
 	}
 	
 	public void onDisable(){
@@ -107,6 +112,10 @@ public class GChat extends JavaPlugin{
 			}
 		}
 		return null;
+	}
+	
+	public static GChat getMain(){
+		return main;
 	}
 }
 

@@ -13,8 +13,6 @@ badWordsTier1:
   - 'exampleword1'
   - 'example_word2' # use '_' instead of spaces.
 
-#Enable the built in party system
-Parties_Enabled: false
   
 # List of groups and their properties(Group names MUST be the same as 
 # your permission groups)

@@ -8,8 +8,8 @@ import java.util.UUID;
 
 import net.md_5.bungee.api.ChatColor;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.mig.gchat.groups.Groups;
 
 public class thePlayer {
 	private Player player;
@@ -29,7 +29,7 @@ public class thePlayer {
 	public List<UUID> onlinePlayers;
 	
 	public thePlayer(Player p){
-		main = (GChat) Bukkit.getServer().getPluginManager().getPlugin("GChatTowny");;
+		main = GChat.getMain();
 		player = p;
 		
 		if(main.getConfig().getBoolean("MySql")){
@@ -50,8 +50,8 @@ public class thePlayer {
 					}
 				}
 				else{
-					groupHandler gh = new groupHandler();
-					group = gh.getGroup(player);
+					Groups g = new Groups();
+					group = g.getGroup(player);
 					mediaLink = "";
 					savePlayersYML();
 				}
@@ -59,17 +59,17 @@ public class thePlayer {
 			}	
 		}
 		else{
-			groupHandler gh = new groupHandler();
+			Groups g = new Groups();
 			name = player.getName();
 			if(main.pConfig.contains(""+player.getUniqueId())){
-				group = gh.getGroup(player);
+				group = g.getGroup(player);
 				mediaLink = main.pConfig.getString(""+player.getUniqueId()+".MediaLink");
 				if(mediaLink == null){
 					mediaLink = "";
 				}
 			}
 			else{
-				group = gh.getGroup(player);
+				group = g.getGroup(player);
 				mediaLink = "";
 				savePlayersYML();
 			}

@@ -4,7 +4,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.mig.gchat.utils.GChat;
 
 public class badWordHandler {
@@ -15,7 +14,7 @@ public class badWordHandler {
 	private static List <String> wordTier = new ArrayList<String>();
 	
 	//get an object of the main class
-	private GChat main = (GChat) Bukkit.getServer().getPluginManager().getPlugin("GChat");
+	private GChat main = GChat.getMain();
 	
 	//test to see if the word is on the forbidden list and if so return true
 	public boolean isBadWord(String word){

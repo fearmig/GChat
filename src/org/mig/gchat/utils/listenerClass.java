@@ -3,7 +3,6 @@ package org.mig.gchat.utils;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,14 +16,10 @@ import org.mig.gchat.chat.ChatControl;
 
 public class listenerClass implements Listener{
 	private static ArrayList<Player> newPlayerList = new ArrayList<Player>();
-	private final GChat main;
-	
-	public listenerClass(){
-		this.main = (GChat) Bukkit.getServer().getPluginManager().getPlugin("GChatTowny");
-	}
 	
 	@EventHandler
 	public void onJoin(PlayerJoinEvent event ){
+		GChat main = GChat.getMain();
 		
 		String tempName;
 		if(main.getConfig().getBoolean("MySql")){
@@ -47,16 +42,19 @@ public class listenerClass implements Listener{
 		
 		//added to list used for mine chat check
 		newPlayerList.add(p);
-		this.main.getServer().getScheduler().scheduleSyncDelayedTask(this.main, new Runnable() { public void run() { newPlayerList.remove(p); } }, 20 * 4); // 20 (one second in ticks) * 5 (seconds to wait)
+		main.getServer().getScheduler().scheduleSyncDelayedTask(main, new Runnable() { public void run() { newPlayerList.remove(p); } }, 20 * 4); // 20 (one second in ticks) * 5 (seconds to wait)
 		event.setJoinMessage(null);
 	}
 	
 	@EventHandler
 	public void onChat(AsyncPlayerChatEvent event){
-		//thePatch.compileList();
-		ChatControl c = new ChatControl(GChat.getThePlayer(event.getPlayer()), event.getMessage(),minechatCompatability.mineChatStatus(event.getPlayer().getUniqueId()));
-		c.chat();
-				event.setCancelled(true);
+		if(GChat.getThePlayer(event.getPlayer()) != null){
+			ChatControl c = new ChatControl(GChat.getThePlayer(event.getPlayer()), event.getMessage(),minechatCompatability.mineChatStatus(event.getPlayer().getUniqueId()));
+			c.chat();
+			event.setCancelled(true);
+		}
+		
+		
 	}
 	
 	@EventHandler
