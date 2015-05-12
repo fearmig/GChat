@@ -6,11 +6,14 @@ import java.util.List;
 
 import org.mig.gchat.utils.GChat;
 
-public class badWordHandler {
+
+//This class handles testing a message to see if it may contain a word on
+//the prohibited list.
+public class BadWordHandler {
 	
 	//To be implemented make badword an object with attributes of wordTier and wordString
 	
-	private static List <String> badWords = new ArrayList<String>();
+	public static List <String> badWords = new ArrayList<String>();
 	private static List <String> wordTier = new ArrayList<String>();
 	
 	//get an object of the main class
@@ -49,7 +52,7 @@ public class badWordHandler {
 			}
 		}
 		else{
-			main.getConfig().set("badWords", badWordHandler.badWords);
+			main.getConfig().set("badWords", BadWordHandler.badWords);
 			main.saveConfig();
 		}
 	}
@@ -66,7 +69,7 @@ public class badWordHandler {
 			}
 		}
 		else{
-			main.getConfig().set("badWords", badWordHandler.badWords);
+			main.getConfig().set("badWords", BadWordHandler.badWords);
 			main.saveConfig();
 		}
 	}
@@ -75,21 +78,23 @@ public class badWordHandler {
 	public void fillList(){
 		if(main.getConfig().getBoolean("MySql")){
 			try {
-				main.mysql.retrieveBadWords();
+				badWords = main.mysql.retrieveBadWords();
 			} catch (ClassNotFoundException | SQLException e) {
 				e.printStackTrace();
 			}
 		}
-		List <String> temp;
-		temp = main.getConfig().getStringList("badWordsTier1");
-		for(String s: temp){
-			badWords.add(s);
-			wordTier.add("1");
-		}
-		temp = main.getConfig().getStringList("badWordsTier2");
-		for(String s: temp){
-			badWords.add(s);
-			wordTier.add("2");
+		else{
+			List <String> temp;
+			temp = main.getConfig().getStringList("badWordsTier1");
+			for(String s: temp){
+				badWords.add(s);
+				wordTier.add("1");
+			}
+			temp = main.getConfig().getStringList("badWordsTier2");
+			for(String s: temp){
+				badWords.add(s);
+				wordTier.add("2");
+			}
 		}
 	}
 	
@@ -98,7 +103,7 @@ public class badWordHandler {
 		for(int i = 0; i < badWords.size(); i++){
 			main.getLogger().info("Added " + badWords.get(i) + "to MySQL");
 			try {
-				main.mysql.addWord(badWords.get(i),badWordHandler.wordTier.get(i));
+				main.mysql.addWord(badWords.get(i),BadWordHandler.wordTier.get(i));
 			} catch (ClassNotFoundException | SQLException e) {
 				e.printStackTrace();
 				return false;
@@ -113,6 +118,7 @@ public class badWordHandler {
 		//gChat.plugin.reloadConfig();
 		m = m.toLowerCase();
 		if(badWords!=null){
+			
 			for(int i = 0 ; i < badWords.size(); i++){
 				//test _word
 				String tWord1 = badWords.get(i);

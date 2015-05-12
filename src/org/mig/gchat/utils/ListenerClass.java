@@ -13,10 +13,11 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.mig.gchat.chat.ChatControl;
 
-
-public class listenerClass implements Listener{
+//This class handles all the listners
+public class ListenerClass implements Listener{
 	private static ArrayList<Player> newPlayerList = new ArrayList<Player>();
 	
+	//when a player joins gather the info of the player and create a new ThePlayer object
 	@EventHandler
 	public void onJoin(PlayerJoinEvent event ){
 		GChat main = GChat.getMain();
@@ -30,7 +31,7 @@ public class listenerClass implements Listener{
 				main.getConfig().set("MySql", false);
 			}
 		}
-		thePlayer tp = new thePlayer(event.getPlayer());
+		ThePlayer tp = new ThePlayer(event.getPlayer());
 		GChat.onlinePlayers.add(tp);
 		
 		//Set display for Player Tab List
@@ -46,10 +47,11 @@ public class listenerClass implements Listener{
 		event.setJoinMessage(null);
 	}
 	
+	//when a player chats handle the chat with this plugin and cancel the event with the server.
 	@EventHandler
 	public void onChat(AsyncPlayerChatEvent event){
 		if(GChat.getThePlayer(event.getPlayer()) != null){
-			ChatControl c = new ChatControl(GChat.getThePlayer(event.getPlayer()), event.getMessage(),minechatCompatability.mineChatStatus(event.getPlayer().getUniqueId()));
+			ChatControl c = new ChatControl(GChat.getThePlayer(event.getPlayer()), event.getMessage(),MinechatCompatability.mineChatStatus(event.getPlayer().getUniqueId()));
 			c.chat();
 			event.setCancelled(true);
 		}
@@ -57,21 +59,29 @@ public class listenerClass implements Listener{
 		
 	}
 	
+	//when a player leaves remove them from the onlinePlayers list and stop the quit message
 	@EventHandler
 	public void onLeave(PlayerQuitEvent event){
-		minechatCompatability.mineChatOff(event.getPlayer().getUniqueId());
+		MinechatCompatability.mineChatOff(event.getPlayer().getUniqueId());
 		GChat.onlinePlayers.remove(GChat.getThePlayer(event.getPlayer()));
 		event.setQuitMessage(null);
 	}
+	
+	/*when a player places a command this method recieves it before it is processed and checks to see how
+	 *recently a player joined and if within 5 seconds it will automatically turn off json chat and just
+	 *send regular messages due to that being an indication of a player using minechat which can not handle
+	 *json chat. This is able to be toggled off by the player if they wish.
+	 */
+	
 	@EventHandler
 	public void onCommand(PlayerCommandPreprocessEvent event){
 		ChatControl c = new ChatControl();
-		c.adminGroupMessage(event.getPlayer().getName() + ": " + event.getMessage());
+		c.adminGroupMessage(event.getPlayer().getName() + ": " + event.getMessage(), true);
 		for(int i = 0; i < newPlayerList.size(); i++){
 			if(newPlayerList.get(i).getUniqueId().equals(event.getPlayer().getUniqueId())&& event.getMessage().equals("/spawn")){
 				event.getPlayer().sendMessage(ChatColor.BLUE + "MineChat has been detected and Minechat Mode turned on");
 				event.getPlayer().sendMessage(ChatColor.BLUE + "If this has been a mistake please type" + ChatColor.RED + " /gchat off");
-				minechatCompatability.mineChatOn(event.getPlayer().getUniqueId());
+				MinechatCompatability.mineChatOn(event.getPlayer().getUniqueId());
 			}
 		}
 	}

@@ -1,7 +1,9 @@
 package org.mig.gchat.chat.filter;
 
-import org.mig.gchat.utils.thePlayer;
+import org.mig.gchat.utils.ThePlayer;
 
+//The sole purpose of this class is to check for what is considered spam such
+//as the use of too many capital letters or repeating a message over and over.
 public class SpamBlocker {
 	
 	//check for more than 4 caps in a message and if there are put entire message to lowercase
@@ -22,7 +24,7 @@ public class SpamBlocker {
 	}
 	
 	//check for spamming messages
-	public boolean checkSpam(thePlayer tplayer, String message){
+	public boolean checkSpam(ThePlayer tplayer, String message){
 		if(tplayer.getPrevMess().equals(message)){
 			return true;
 		}

@@ -8,28 +8,33 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.mig.gchat.chat.ChatControl;
 import org.mig.gchat.utils.GChat;
-import org.mig.gchat.utils.minechatCompatability;
+import org.mig.gchat.utils.MinechatCompatability;
 
-public class adminChatCommand implements CommandExecutor{
-
+//Command to put a player into a semipermanent state of admin chat mode
+public class AdminChatCommand implements CommandExecutor{
+	
 	@Override
 	public boolean onCommand(CommandSender sender, Command command,
 			String label, String[] args) {
 		if(sender instanceof Player){
 			Player p = (Player) sender;
+			//test if a player is allowed to run this command
 			if(p.hasPermission("gchat.adminchat")){
+				//If only '/ac' was run then put the player into admin chat mode
 				if(args.length==0){
-					GChat.getThePlayer(p).setChatMode(3);
+					//set the attributes of that chat mode
+					GChat.getThePlayer(p).setChatMode(1);
 					GChat.getThePlayer(p).setTextColor(ChatColor.GREEN);
 					p.sendMessage(ChatColor.GREEN + "Admin Chat enabled.");
 				}
+				//If the player sends '/ac and some text' send a one time message in admin chat.
 				else {
 					String message = args[0];
 					for(int i = 2; i < args.length; i++){
 						message = message + " " + args[i];
 					}
-					ChatControl c = new ChatControl(GChat.getThePlayer(p), message,minechatCompatability.mineChatStatus(p.getUniqueId()));
-					c.startSingleGlobalMessage();
+					ChatControl c = new ChatControl(GChat.getThePlayer(p), message,MinechatCompatability.mineChatStatus(p.getUniqueId()));
+					c.startSingleAdminMessage();
 				}
 			}
 			

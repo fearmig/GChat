@@ -9,10 +9,13 @@ import java.util.List;
 
 import org.bukkit.entity.Player;
 
+//Class built to interact with the Towny API
 public class TownyHandler {
 	
+	//Resident is how towny holds all their info about a player.
 	private Resident r;
 	
+	//constructor
 	public TownyHandler(String name){
 		try {
 			r = TownyUniverse.getDataSource().getResident(name);
@@ -23,6 +26,7 @@ public class TownyHandler {
 		
 	}
 	
+	//returns the nation of the resident
 	public String getNation(){
 		if(r.hasNation()){
 			try {
@@ -36,10 +40,12 @@ public class TownyHandler {
 		}
 	}
 	
+	//returns if a resident is apart of a nation
 	public boolean inNation(){
 		return r.hasNation();
 	}
 	
+	//returns a List of players inside the resident's nation
 	public List <Player> getNationPlayers(){
 		try {
 			return TownyUniverse.getOnlinePlayers(r.getTown().getNation());
@@ -50,6 +56,7 @@ public class TownyHandler {
 		return null;
 	}
 	
+	//return the resident's town
 	public String getTown(){
 		if(r.hasTown()){
 			try {
@@ -63,10 +70,12 @@ public class TownyHandler {
 		}
 	}
 	
+	//return if the resident is apart of a town
 	public boolean inTown(){
 		return r.hasTown();
 	}
 	
+	//return a List of players that are apart of the residents town
 	public List<Player> getTownPlayers(){
 		try {
 			return TownyUniverse.getOnlinePlayers(r.getTown());
@@ -77,6 +86,7 @@ public class TownyHandler {
 		return null;
 	}
 	
+	//return a resident's surname
 	public String getSur(){
 		if(r.hasSurname())
 			return (r.getSurname() + " ");
@@ -84,6 +94,7 @@ public class TownyHandler {
 			return "";
 	}
 	
+	//return the prefix for a mayor or king if they have one.
 	public String getMayor(){
 		if(r.isMayor() || r.isKing())
 			return TownyFormatter.getNamePrefix(r);

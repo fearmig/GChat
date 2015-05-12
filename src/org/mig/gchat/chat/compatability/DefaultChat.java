@@ -6,7 +6,9 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
-import org.mig.gchat.utils.thePlayer;
+import org.mig.gchat.utils.ThePlayer;
+
+//The sole purpose of this class is to build the default message that is to be sent out.
 
 public class DefaultChat {
 	
@@ -14,7 +16,6 @@ public class DefaultChat {
 	private String name;
 	private String group;
 	private String mediaLink;
-	private thePlayer tplayer;
 	private boolean boldA;
 	private boolean boldM;
 	private boolean boldG;
@@ -22,21 +23,22 @@ public class DefaultChat {
 	private ChatColor groupColor;
 	private ChatColor nameColor;
 	
-	public DefaultChat(thePlayer tp, String m){
+	//constructor
+	public DefaultChat(ThePlayer tp, String m, ChatColor mc){
 		
-		name = tplayer.getName();
-		group = tplayer.getGroup();
-		mediaLink = tplayer.getMediaLink();
-		nameColor = tplayer.getNameColor();
-		boldA = tplayer.getNameBold();
-		messageColor = tplayer.getTextColor();
-		boldM = tplayer.getTextBold();
-		groupColor = tplayer.getGroupColor();
-		boldG = tplayer.getGroupBold();
+		name = tp.getName();
+		group = tp.getGroup();
+		mediaLink = tp.getMediaLink();
+		nameColor = tp.getNameColor();
+		boldA = tp.getNameBold();
+		messageColor = mc;
+		boldM = tp.getTextBold();
+		groupColor = tp.getGroupColor();
+		boldG = tp.getGroupBold();
 		message = m;
 	}
 	
-	
+	//Method that returns a textComponent array that contains the formatted message
 	public TextComponent[] buildMessage(){
 		//send json message
 		TextComponent [] fullM;

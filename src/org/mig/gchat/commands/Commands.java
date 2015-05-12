@@ -2,17 +2,18 @@ package org.mig.gchat.commands;
 
 import net.md_5.bungee.api.ChatColor;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.mig.gchat.chat.filter.badWordHandler;
+import org.mig.gchat.chat.filter.BadWordHandler;
 import org.mig.gchat.utils.GChat;
-import org.mig.gchat.utils.minechatCompatability;
+import org.mig.gchat.utils.MinechatCompatability;
 
 public class Commands implements CommandExecutor{
-	
-	private badWordHandler bw = new badWordHandler();
+	//initialize class that handles bad language
+	private BadWordHandler bw = new BadWordHandler();
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command command,
@@ -73,12 +74,12 @@ public class Commands implements CommandExecutor{
 	//turn minechat mode on
 	private void minechatOn(String args[], Player p){	
 		if(args.length==1){
-			if(minechatCompatability.mineChatStatus(p.getUniqueId())){
+			if(MinechatCompatability.mineChatStatus(p.getUniqueId())){
 				p.sendMessage(ChatColor.AQUA + "Minechat has already been toggled on");				
 			}
 			else{
 				p.sendMessage(ChatColor.AQUA + "Minechat has been toggled on");
-				minechatCompatability.mineChatOn(p.getUniqueId());
+				MinechatCompatability.mineChatOn(p.getUniqueId());
 			}
 		}
 		else{
@@ -89,9 +90,9 @@ public class Commands implements CommandExecutor{
 	//turn minechat mode off
 	private void minechatOff(String args[], Player p){
 		if(args.length == 1){
-			if(minechatCompatability.mineChatStatus(p.getUniqueId())){
+			if(MinechatCompatability.mineChatStatus(p.getUniqueId())){
 				p.sendMessage(ChatColor.AQUA + "Minechat has been toggled off");
-				minechatCompatability.mineChatOff(p.getUniqueId());
+				MinechatCompatability.mineChatOff(p.getUniqueId());
 			}
 			else{
 				p.sendMessage(ChatColor.AQUA + "Minechat has already been toggled off");
@@ -143,18 +144,22 @@ public class Commands implements CommandExecutor{
 	private void set(String args[], Player p){
 		if(args.length==3){
 			if(args[1]!=null){
+				//set the twitter link
 				if(args[1].equalsIgnoreCase("twitter")){
 					GChat.getThePlayer(p).setMediaLink("https://twitter.com/"+args[2]);
-					p.sendMessage(ChatColor.AQUA + "Your Twitter username has been set as: " + ChatColor.DARK_AQUA + args[1]);
+					p.sendMessage(ChatColor.AQUA + "Your Twitter username has been set as: " + ChatColor.DARK_AQUA + args[2]);
 				}
+				//set the youtube link
 				else if(args[1].equalsIgnoreCase("youtube")){
 					GChat.getThePlayer(p).setMediaLink("https://youtube.com/user/"+args[2]);
-					p.sendMessage(ChatColor.AQUA + "Your Youtube username has been set as: " + ChatColor.DARK_AQUA + args[1]);
+					p.sendMessage(ChatColor.AQUA + "Your Youtube username has been set as: " + ChatColor.DARK_AQUA + args[2]);
 				}
+				//set the twitch link
 				else if(args[1].equalsIgnoreCase("twitch")){
 					GChat.getThePlayer(p).setMediaLink("https://twitch.tv/"+args[2]);
-					p.sendMessage(ChatColor.AQUA + "Your Twitch channel has been set as: " + ChatColor.DARK_AQUA + args[1]);
+					p.sendMessage(ChatColor.AQUA + "Your Twitch channel has been set as: " + ChatColor.DARK_AQUA + args[2]);
 				}
+				//display all the commands and what the do to the player
 				else if(args[1].equalsIgnoreCase("help")){
 					p.sendMessage(ChatColor.AQUA + "/gchat set twitter {twitterName}" + ChatColor.GOLD + " ~ set Twitter media link. Do not include @");
 					p.sendMessage(ChatColor.AQUA + "/gchat set youtube {channelName}" + ChatColor.GOLD + " ~ set Youtube media link. Only include what is after youtube.com/user/");
@@ -163,6 +168,7 @@ public class Commands implements CommandExecutor{
 			}
 		}
 		else{
+			//display all the commands and what the do to the player
 			if(args[1].equalsIgnoreCase("help")){
 				p.sendMessage(ChatColor.AQUA + "/gchat set twitter {twitterName}" + ChatColor.GOLD + " ~ set Twitter media link. Do not include @");
 				p.sendMessage(ChatColor.AQUA + "/gchat set youtube {channelName}" + ChatColor.GOLD + " ~ set Youtube media link. Only include what is after youtube.com/user/");
@@ -189,28 +195,27 @@ public class Commands implements CommandExecutor{
 
 	//Provide Help on commands
 	private void help(Player p){
+		
 		p.sendMessage(ChatColor.AQUA + "      " + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "GChat Help");
 		p.sendMessage("");
 		p.sendMessage(ChatColor.AQUA + "/gchat on" + ChatColor.GOLD + " ~ Turn on Minechat Mode (non JSON text)");
 		p.sendMessage(ChatColor.AQUA + "/gchat off" + ChatColor.GOLD + " ~ Turn off Minechat Mode (non JSON text)");
 		p.sendMessage(ChatColor.AQUA + "/gchat set {}" + ChatColor.GOLD + " ~ do '/gchat set help' to learn more");
-		p.sendMessage(ChatColor.AQUA + "/gchat tc" + ChatColor.GOLD + " ~ Put yourself into Town Chat Mode");
-		p.sendMessage(ChatColor.AQUA + "/tc" + ChatColor.GOLD + " ~ Put yourself into Town Chat Mode");
-		p.sendMessage(ChatColor.AQUA + "/gchat tc [message]" + ChatColor.GOLD + " ~ Sends a single message in Town Chat Mode");
-		p.sendMessage(ChatColor.AQUA + "/tc [message]" + ChatColor.GOLD + " ~ Sends a single message in Town Chat Mode");
-		p.sendMessage(ChatColor.AQUA + "/gchat nc" + ChatColor.GOLD + " ~ Put yourself into Nation Chat Mode");
-		p.sendMessage(ChatColor.AQUA + "/nc" + ChatColor.GOLD + " ~ Put yourself into Nation Chat Mode");
-		p.sendMessage(ChatColor.AQUA + "/gchat nc [message]" + ChatColor.GOLD + " ~ Sends a single message in Nation Chat Mode");
-		p.sendMessage(ChatColor.AQUA + "/nc [message]" + ChatColor.GOLD + " ~ Sends a single message in Nation Chat Mode");
-		p.sendMessage(ChatColor.AQUA + "/gchat g" + ChatColor.GOLD + " ~ Put yourself into Global Chat Mode");
+		
+		//if towny is enabled display towny only commands in help message
+		if(Bukkit.getServer().getPluginManager().isPluginEnabled("Towny")){
+			p.sendMessage(ChatColor.AQUA + "/tc" + ChatColor.GOLD + " ~ Put yourself into Town Chat Mode");
+			p.sendMessage(ChatColor.AQUA + "/tc [message]" + ChatColor.GOLD + " ~ Sends a single message in Town Chat Mode");
+			p.sendMessage(ChatColor.AQUA + "/nc" + ChatColor.GOLD + " ~ Put yourself into Nation Chat Mode");
+			p.sendMessage(ChatColor.AQUA + "/nc [message]" + ChatColor.GOLD + " ~ Sends a single message in Nation Chat Mode");	
+		}
+		
 		p.sendMessage(ChatColor.AQUA + "/g" + ChatColor.GOLD + " ~ Put yourself into Global Chat Mode");
-		p.sendMessage(ChatColor.AQUA + "/gchat g [message]" + ChatColor.GOLD + " ~ Sends a single message in Global Chat Mode");
 		p.sendMessage(ChatColor.AQUA + "/g [message]" + ChatColor.GOLD + " ~ Sends a single message in Global Chat Mode");
-
+		
+		//display admin commands to user if they have admin permission
 		if(p.hasPermission("gchat.admin")){
-			p.sendMessage(ChatColor.AQUA + "/gchat ac" + ChatColor.GOLD + " ~ Put yourself into Admin Chat Mode");
 			p.sendMessage(ChatColor.AQUA + "/ac" + ChatColor.GOLD + " ~ Put yourself into Admin Chat Mode");
-			p.sendMessage(ChatColor.AQUA + "/gchat ac [message]" + ChatColor.GOLD + " ~ Sends a single message in Admin Chat Mode");
 			p.sendMessage(ChatColor.AQUA + "/ac [message]" + ChatColor.GOLD + " ~ Sends a single message in Admin Chat Mode");
 			p.sendMessage(ChatColor.AQUA + "/gchat spy" + ChatColor.GOLD + " ~ Toggles on and off Spy Mode");
 			p.sendMessage(ChatColor.AQUA + "/gchat blockword {word}" + ChatColor.GOLD + " ~ Add word to blocked word list");

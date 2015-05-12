@@ -7,10 +7,13 @@ import org.bukkit.entity.Player;
 
 import com.earth2me.essentials.Essentials;
 
-public class essenHandler {
+//Class that handles essentials when it is installed on the server. Mainly used just to see if a player
+//ignores another.
+public class EssenHandler {
 	Essentials ess = (Essentials) Bukkit.getServer().getPluginManager().getPlugin("Essentials");
 	private List <String> ignoredPlayers;
 	
+	//test if either of the players ignore each other and return if true or not.
 	public boolean ignored(Player p, Player b){
 		ignoredPlayers = ess.getUser(p)._getIgnoredPlayers();
 		for(int i = 0; i < ignoredPlayers.size(); i++){

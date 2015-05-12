@@ -1,5 +1,6 @@
 package org.mig.gchat.chat;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.md_5.bungee.api.ChatColor;
@@ -11,11 +12,11 @@ import org.bukkit.entity.Player;
 import org.mig.gchat.chat.compatability.DefaultChat;
 import org.mig.gchat.chat.compatability.TownyChat;
 import org.mig.gchat.chat.filter.SpamBlocker;
-import org.mig.gchat.chat.filter.badWordHandler;
+import org.mig.gchat.chat.filter.BadWordHandler;
 import org.mig.gchat.utils.GChat;
-import org.mig.gchat.utils.minechatCompatability;
-import org.mig.gchat.utils.thePlayer;
-import org.mig.gchat.utils.compatability.essenHandler;
+import org.mig.gchat.utils.MinechatCompatability;
+import org.mig.gchat.utils.ThePlayer;
+import org.mig.gchat.utils.compatability.EssenHandler;
 
 //should control just about everything that comes to the chat.
 public class ChatControl{
@@ -24,23 +25,23 @@ public class ChatControl{
 	private String name;
 	private String group;
 	private Player player;
-	private thePlayer tplayer;
+	private ThePlayer tplayer;
 	private boolean minechatToggle;
 	private int chatMode;
 	private ChatColor messageColor;
 	private ChatColor nameColor;
-	private List<Player> recipients;
+	private List<Player> recipients = new ArrayList<Player>();
 	
 	private GChat main = GChat.getMain();
 	
 	//spam blockers
-	private badWordHandler tw = new badWordHandler();
+	private BadWordHandler bw = new BadWordHandler();
 	private SpamBlocker sb = new SpamBlocker();
 	
 	// Constructors
 	public ChatControl(){
 	}
-	public ChatControl(thePlayer tp, String m, boolean mc){
+	public ChatControl(ThePlayer tp, String m, boolean mc){
 		tplayer = tp;
 		message = m;
 		player = tp.getPlayer();
@@ -106,15 +107,15 @@ public class ChatControl{
 	public void chat(){
 		
 		//test message for bad words
-		String temp = tw.testMessage(message);
+		String temp = bw.testMessage(message);
 		boolean spam = sb.checkSpam(tplayer, message);
 		
 		if(temp != null){
 			//if the message contained a bad word stop the message from being put into chat and
 			//send those with "gchat.admin" a messages stating they tried to curse
 			player.spigot().sendMessage(new TextComponent( new ComponentBuilder("Please do not use that language in here").color(ChatColor.RED).create()));
-			adminGroupMessage(ChatColor.RED + player.getName() + " tried to curse by saying:");
-			adminGroupMessage(message);
+			adminGroupMessage(ChatColor.RED + player.getName() + " tried to curse by saying:", false);
+			adminGroupMessage(message, false);
 			return;
 		}
 		//check if player sent the same message, anti-spam
@@ -134,12 +135,12 @@ public class ChatControl{
 			//build the message
 			TextComponent[] fullM;
 			if(Bukkit.getServer().getPluginManager().isPluginEnabled("Towny")){
-				obj = new TownyChat(tplayer, message);
+				obj = new TownyChat(tplayer, message, messageColor);
 				messageColor = ChatColor.WHITE;
 				fullM = ((TownyChat) obj).buildMessage();
 			}
 			else{
-				obj = new DefaultChat(tplayer, message);
+				obj = new DefaultChat(tplayer, message, messageColor);
 				fullM = ((DefaultChat) obj).buildMessage();
 			}
 			
@@ -175,7 +176,7 @@ public class ChatControl{
 	}
 	public void startSingleNationMessage(){
 		messageColor = ChatColor.GOLD;
-		chatMode = 1;
+		chatMode = 3;
 		chat();
 	}
 	public void startSingleTownMessage(){
@@ -185,18 +186,18 @@ public class ChatControl{
 	}
 	public void startSingleAdminMessage(){
 		messageColor = ChatColor.GREEN;
-		chatMode = 2;
+		chatMode = 1;
 		chat();
 	}
 	
 	//send a global message
 	private void sendGlobalMessage(TextComponent[] fullM){
-		for(thePlayer b: GChat.onlinePlayers){
+		for(ThePlayer b: GChat.onlinePlayers){
 			boolean ignored = false;
 			
 			//test if the player ignores the sender or the sender ignores the player
 			if(GChat.essen){
-				essenHandler e = new essenHandler();
+				EssenHandler e = new EssenHandler();
 				ignored = e.ignored(player, b.getPlayer());
 			}
 			
@@ -204,7 +205,7 @@ public class ChatControl{
 			if(!ignored){
 			
 				//check for mine chat mode and if on send regular non JSON message
-				if(minechatCompatability.mineChatStatus(b.getPlayer().getUniqueId())){
+				if(MinechatCompatability.mineChatStatus(b.getPlayer().getUniqueId())){
 					b.getPlayer().sendMessage(nameColor + name +": " + messageColor + message);
 				}
 				else{
@@ -223,8 +224,7 @@ public class ChatControl{
 		recipients = tc.townMembers();	
 	}
 	private void setupAdminMessage(TextComponent[] fullM){
-		messageColor = ChatColor.GREEN;
-		for(thePlayer p: GChat.onlinePlayers){
+		for(ThePlayer p: GChat.onlinePlayers){
 			if(p.getPlayer().hasPermission("gchat.adminChat")){
 				recipients.add(p.getPlayer());
 			}
@@ -237,7 +237,7 @@ public class ChatControl{
 			
 			//test if the player ignores the sender or the sender ignores the player
 			if(GChat.essen){
-				essenHandler e = new essenHandler();
+				EssenHandler e = new EssenHandler();
 				ignored = e.ignored(player, b);
 			}
 			
@@ -245,7 +245,7 @@ public class ChatControl{
 			if(!ignored){
 			
 				//check for mine chat mode and if on send regular non JSON message
-				if(minechatCompatability.mineChatStatus(b.getPlayer().getUniqueId())){
+				if(MinechatCompatability.mineChatStatus(b.getPlayer().getUniqueId())){
 					b.sendMessage(nameColor + name +": " + messageColor + message);
 				}
 				else{
@@ -256,11 +256,14 @@ public class ChatControl{
 	}
 	
 	//send message to group that has perm gchat.admin
-	public void adminGroupMessage(String s){
-		for(thePlayer p: GChat.onlinePlayers){
+	public void adminGroupMessage(String s, boolean spy){
+		for(ThePlayer p: GChat.onlinePlayers){
 			if(p.getPlayer().hasPermission("gchat.adminChat")){
-				if(p.getSpyMode()){
+				if(p.getSpyMode() && spy){
 					p.getPlayer().sendMessage(ChatColor.YELLOW + s + "");
+				}
+				else if(!spy){
+					p.getPlayer().sendMessage(s);
 				}
 			}
 		}

@@ -9,15 +9,17 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 import org.bukkit.entity.Player;
-import org.mig.gchat.utils.thePlayer;
+import org.mig.gchat.utils.ThePlayer;
 import org.mig.gchat.utils.compatability.TownyHandler;
+
+//The sole purpose of this class is to build the Towny message that is to be sent out.
 
 public class TownyChat{
 	private String message;
 	private String name;
 	private String group;
 	private String mediaLink;
-	private thePlayer tplayer;
+	private ThePlayer tplayer;
 	private boolean boldA;
 	private boolean boldM;
 	private boolean boldG;
@@ -26,22 +28,26 @@ public class TownyChat{
 	private ChatColor nameColor;
 	private TownyHandler th;
 	
-	public TownyChat(thePlayer tp, String m){
+	//constructors
+	public TownyChat(ThePlayer tp, String m, ChatColor mc){
 		tplayer = tp;
 		name = tp.getName();
 		group = tp.getGroup();
 		mediaLink = tp.getMediaLink();
 		nameColor = tp.getNameColor();
 		boldA = tp.getNameBold();
-		messageColor = tp.getTextColor();
+		messageColor = mc;
 		boldM = tp.getTextBold();
 		groupColor = tp.getGroupColor();
 		boldG = tp.getGroupBold();
 		message = m;
 	}
 	
+	//Method that returns a TextComponent array that contains the formated message
 	public TextComponent[] buildMessage(){
-	
+		
+		//initialization of the Towny Resident object that provides info from Towny about
+		//the player that is sent.
 		th = new TownyHandler(tplayer.getName());
 		
 		//send json message
@@ -76,10 +82,12 @@ public class TownyChat{
 					
 	}
 	
+	//Returns a list of all the players that are in the the TownyObject's nation
 	public List <Player> nationMembers(){
 		return th.getNationPlayers();
 	}
 	
+	//Returns a list of all the players that are in the the TownyObject's town
 	public List <Player> townMembers(){
 		return th.getTownPlayers();
 	}
