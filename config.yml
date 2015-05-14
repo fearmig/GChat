@@ -28,4 +28,12 @@ Groups:
     nameBold: false
     textColor: white
     textBold: false
-    mediaLink: 'www.someLinkHere.com'
+    
+# Have GChat controls the colors of the names in the tab player list.
+# This means it will have the colors of the names in that list associated with
+# the color of their name in chat
+TabPlayerList: true
+
+# How many capital letters are allowed before the message is converted to all
+# lower case
+CapsAllowed: 4

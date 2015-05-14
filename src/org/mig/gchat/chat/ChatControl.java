@@ -115,6 +115,7 @@ public class ChatControl{
 			//send those with "gchat.admin" a messages stating they tried to curse
 			player.spigot().sendMessage(new TextComponent( new ComponentBuilder("Please do not use that language in here").color(ChatColor.RED).create()));
 			adminGroupMessage(ChatColor.RED + player.getName() + " tried to curse by saying:", false);
+			message = message.replace(temp,ChatColor.RED + temp + ChatColor.WHITE);
 			adminGroupMessage(message, false);
 			return;
 		}
@@ -129,14 +130,14 @@ public class ChatControl{
 			
 			//check for too many caps in message unless player has "gchat.capexempt"
 			if(!player.hasPermission("gchat.capexempt")){
-				sb.checkCaps(message);
+				message = sb.checkCaps(message);
 			}
 			
 			//build the message
 			TextComponent[] fullM;
 			if(Bukkit.getServer().getPluginManager().isPluginEnabled("Towny")){
-				obj = new TownyChat(tplayer, message, messageColor);
 				messageColor = ChatColor.WHITE;
+				obj = new TownyChat(tplayer, message, messageColor);
 				fullM = ((TownyChat) obj).buildMessage();
 			}
 			else{

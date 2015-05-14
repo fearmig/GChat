@@ -1,5 +1,6 @@
 package org.mig.gchat.chat.filter;
 
+import org.mig.gchat.utils.GChat;
 import org.mig.gchat.utils.ThePlayer;
 
 //The sole purpose of this class is to check for what is considered spam such
@@ -11,13 +12,14 @@ public class SpamBlocker {
 	public String checkCaps(String message){
 		int i=0;
 		int count=0;
+		int capsAllowed = GChat.getMain().getConfig().getInt("CapsAllowed");
 		do{
 			if(Character.isUpperCase(message.charAt(i))){
 				count++;
 			}
 			i++;
-		}while(count<5 && i < message.length());
-		if(count>4){
+		}while(count < capsAllowed+1 && i < message.length());
+		if(count > capsAllowed){
 			return message.toLowerCase();
 		}
 		return message;

@@ -27,7 +27,7 @@ public class GlobalChatCommand implements CommandExecutor{
 			//If the player sends '/g and some text' send a one time message in global chat.
 			else {
 				String message = args[0];
-				for(int i = 2; i < args.length; i++){
+				for(int i = 1; i < args.length; i++){
 					message = message + " " + args[i];
 				}
 				ChatControl c = new ChatControl(GChat.getThePlayer(p), message,MinechatCompatability.mineChatStatus(p.getUniqueId()));

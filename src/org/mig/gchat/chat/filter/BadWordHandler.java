@@ -52,7 +52,7 @@ public class BadWordHandler {
 			}
 		}
 		else{
-			main.getConfig().set("badWords", BadWordHandler.badWords);
+			main.getConfig().set("badWords", badWords);
 			main.saveConfig();
 		}
 	}
@@ -69,7 +69,7 @@ public class BadWordHandler {
 			}
 		}
 		else{
-			main.getConfig().set("badWords", BadWordHandler.badWords);
+			main.getConfig().set("badWords",badWords);
 			main.saveConfig();
 		}
 	}
@@ -115,8 +115,9 @@ public class BadWordHandler {
 	//Test a message to see if it contains a forbidden word, if so it will 
 	//return the word that is forbidden
 	public String testMessage(String m){
-		//gChat.plugin.reloadConfig();
+		//make the message lowercase and remove special characters.
 		m = m.toLowerCase();
+		m = m.replaceAll("[^\\dA-Za-z ]", "");
 		if(badWords!=null){
 			
 			for(int i = 0 ; i < badWords.size(); i++){
@@ -129,6 +130,7 @@ public class BadWordHandler {
 				if(m.contains((CharSequence)tWord1)){
 					int index;
 					if(m.contains((CharSequence)tWord2)){
+						
 						return tWord1;
 					}
 					else if(m.contains((CharSequence)tWord3)){

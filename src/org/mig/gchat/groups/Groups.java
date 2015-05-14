@@ -17,7 +17,7 @@ public class Groups{
 			GroupManagerHandler gm = new GroupManagerHandler(main);
 			return gm.getGroup(p);
 		}
-		else if(main.getServer().getPluginManager().isPluginEnabled("PermissionsEX")){
+		else if(main.getServer().getPluginManager().isPluginEnabled("PermissionsEx")){
 			PEXHandler pex = new PEXHandler();
 			return pex.getGroup(p);
 		}

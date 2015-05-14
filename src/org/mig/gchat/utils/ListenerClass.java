@@ -33,13 +33,14 @@ public class ListenerClass implements Listener{
 		}
 		ThePlayer tp = new ThePlayer(event.getPlayer());
 		GChat.onlinePlayers.add(tp);
-		
-		//Set display for Player Tab List
 		final Player p = event.getPlayer();
-		tempName = p.getName();
-		if(tempName.length()>=15)
-			tempName = p.getName().substring(0,14);
-		p.setPlayerListName(tp.getNameColor()+tempName);
+		//Set display for Player Tab List if in config the option is true
+		if(main.getConfig().getBoolean("TabPlayerList")){
+			tempName = p.getName();
+			if(tempName.length()>=15)
+				tempName = p.getName().substring(0,14);
+			p.setPlayerListName(tp.getNameColor()+tempName);
+		}
 		
 		//added to list used for mine chat check
 		newPlayerList.add(p);

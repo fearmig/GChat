@@ -18,7 +18,7 @@ public class ThePlayer {
 	private String mediaLink;
 	private String previousMessage = "";
 	private ChatColor nameColor;
-	private ChatColor textColor = ChatColor.WHITE;
+	private ChatColor textColor;
 	private ChatColor groupColor;
 	private boolean spyMode = false;
 	private boolean nameBold;
@@ -88,6 +88,7 @@ public class ThePlayer {
 	private void setAttributes(){
 		nameColor = getColor((String)main.getConfig().get("Groups."+group+".nameColor"));
 		groupColor = getColor((String)main.getConfig().get("Groups."+group+".groupNameColor"));
+		textColor = getColor((String)main.getConfig().get("Groups."+group+".textColor"));
 		nameBold = (boolean)main.getConfig().get("Groups."+group+".nameBold");
 		textBold = (boolean)main.getConfig().get("Groups."+group+".textBold");
 	}

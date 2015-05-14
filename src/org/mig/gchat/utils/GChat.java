@@ -54,7 +54,7 @@ public class GChat extends JavaPlugin{
 		}
 		
 		//set up MySql table and PlayersYML
-		players = new File("plugins/GChatTowny/players.yml");
+		players = new File("plugins/GChat/players.yml");
 		bwh = new BadWordHandler();
 		//if MySql is being used initiate the class and gather information
 		if(getConfig().getBoolean("MySql")){
