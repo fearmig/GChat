@@ -48,7 +48,7 @@ public class TownyChat{
 		
 		//initialization of the Towny Resident object that provides info from Towny about
 		//the player that is sent.
-		th = new TownyHandler(tplayer.getName());
+		th = new TownyHandler(tplayer.getPlayer().getName());
 		
 		//send json message
 		TextComponent [] fullM;

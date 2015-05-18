@@ -126,8 +126,6 @@ public class ChatControl{
 		//if the message passed the language chat send it to chat
 		else{
 			
-			Object obj;
-			
 			//check for too many caps in message unless player has "gchat.capexempt"
 			if(!player.hasPermission("gchat.capexempt")){
 				message = sb.checkCaps(message);
@@ -135,31 +133,34 @@ public class ChatControl{
 			
 			//build the message
 			TextComponent[] fullM;
+			switch(chatMode){
+				case 1: setupAdminMessage();
+						break;
+				case 2: setupTownMessage();
+						break;
+				case 3: setupNationMessage();
+						break;
+			}
+			
+			
 			if(Bukkit.getServer().getPluginManager().isPluginEnabled("Towny")){
-				messageColor = ChatColor.WHITE;
-				obj = new TownyChat(tplayer, message, messageColor);
-				fullM = ((TownyChat) obj).buildMessage();
+				TownyChat tc = new TownyChat(tplayer, message, messageColor);
+				fullM = tc.buildMessage();
+				if(chatMode ==2)
+					recipients = tc.townMembers();
+				else if(chatMode == 3)
+					recipients = tc.nationMembers();
 			}
 			else{
-				obj = new DefaultChat(tplayer, message, messageColor);
-				fullM = ((DefaultChat) obj).buildMessage();
+				DefaultChat dc = new DefaultChat(tplayer, message, messageColor);
+				fullM = dc.buildMessage();
 			}
 			
 			//send message according to gamemode
-			switch(chatMode){
-				case 0: sendGlobalMessage(fullM);
-						break;
-				case 1: setupAdminMessage(fullM);
-						sendSpecialMessage(fullM);
-						break;
-				case 2: setupTownMessage(fullM, (TownyChat) obj);
-						sendSpecialMessage(fullM);
-						break;
-				case 3: setupNationMessage(fullM, (TownyChat) obj);
-						sendSpecialMessage(fullM);
-						break;
-				default: sendGlobalMessage(fullM);
-			}
+			if(chatMode == 0)
+				sendGlobalMessage(fullM);
+			else
+				sendSpecialMessage(fullM);				
 		}
 		//write message to console for logging, maybe future toggle option in config
 		main.getLogger().info(name + ": " + message);
@@ -216,15 +217,14 @@ public class ChatControl{
 		}			
 	}
 	
-	private void setupNationMessage(TextComponent[] fullM, TownyChat tc){
+	//set up message attributes for chatmodes
+	private void setupNationMessage(){
 		messageColor = ChatColor.GOLD;
-		recipients = tc.nationMembers();
 	}
-	private void setupTownMessage(TextComponent[] fullM, TownyChat tc){
+	private void setupTownMessage(){
 		messageColor = ChatColor.AQUA;
-		recipients = tc.townMembers();	
 	}
-	private void setupAdminMessage(TextComponent[] fullM){
+	private void setupAdminMessage(){
 		for(ThePlayer p: GChat.onlinePlayers){
 			if(p.getPlayer().hasPermission("gchat.adminChat")){
 				recipients.add(p.getPlayer());

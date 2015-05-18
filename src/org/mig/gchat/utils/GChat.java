@@ -1,7 +1,10 @@
 package org.mig.gchat.utils;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -38,8 +41,10 @@ public class GChat extends JavaPlugin{
 	public static ArrayList<ThePlayer> onlinePlayers = new ArrayList<ThePlayer>();
 	
 	//these represent the players config file
-	public static File players;
-	public YamlConfiguration pConfig;
+	private static File players;
+	private static File names;
+	private YamlConfiguration pConfig;
+	private YamlConfiguration nConfig;
 	
 	public void onEnable() {
 		//try to create a default config file but don't do anything if one already exists
@@ -47,14 +52,21 @@ public class GChat extends JavaPlugin{
 		saveDefaultConfig();
 		main = this;
 		
+		//try to create a default config for names and players
+		players = new File(getDataFolder(), "players.yml");
+		names = new File(getDataFolder(), "names.yml");
+		getConfigs();
+		pConfig = YamlConfiguration.loadConfiguration(players);
+		nConfig = YamlConfiguration.loadConfiguration(names);
+		
 		//test for essentials
 		if(getServer().getPluginManager().isPluginEnabled("Essentials")){
 			getLogger().info("Essentials detected");
 			essen = true;
 		}
 		
-		//set up MySql table and PlayersYML
-		players = new File("plugins/GChat/players.yml");
+		//set up MySql table if enabled
+		
 		bwh = new BadWordHandler();
 		//if MySql is being used initiate the class and gather information
 		if(getConfig().getBoolean("MySql")){
@@ -69,24 +81,11 @@ public class GChat extends JavaPlugin{
 				bwh.fillList();
 			}
 		}
-		//if using config and not MySql create players file if it does exist and load configuration.
-		//also fill badword list from default config.
-		else if (!players.exists()) {
-			try {
-				bwh.fillList();
-				players.createNewFile();
-				pConfig = YamlConfiguration.loadConfiguration(players);
-			} catch (IOException e) {
-				bwh.fillList();
-				this.getLogger().info("Error: " + e);
-			}
-		}
 		//if players had tested to exist then load all defualt configurations.
 		else{
-			pConfig = YamlConfiguration.loadConfiguration(players);
 			bwh.fillList();
 		}
-		//plugin = this;
+		
 		getServer().getPluginManager().registerEvents(this.l, this);
 		
 		//register commands
@@ -121,16 +120,73 @@ public class GChat extends JavaPlugin{
 	public static ThePlayer getThePlayer(Player p){
 		if(onlinePlayers!=null){
 			for(ThePlayer tp: onlinePlayers){
-				if(tp.getName().equalsIgnoreCase(p.getName()))
+				if(tp.getUUID().equalsIgnoreCase("" + p.getUniqueId()))
 					return tp;
 			}
 		}
 		return null;
 	}
 	
+	private void getConfigs(){
+		if(!names.exists()){
+			names.getParentFile().mkdirs();
+			copy(getResource("names.yml"), names);
+		}
+		if(!players.exists()){
+			players.getParentFile().mkdirs();
+			copy(getResource("players.yml"), players);
+		}
+	}
+	private void copy(InputStream i, File f){
+		 try {
+		        OutputStream out = new FileOutputStream(f);
+		        byte[] buf = new byte[1024];
+		        int l;
+		        while((l=i.read(buf))>0){
+		            out.write(buf,0,l);
+		        }
+		        out.close();
+		        i.close();
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		    }
+	}
+	
 	//return the static instance of itself
 	public static GChat getMain(){
 		return main;
 	}
+	
+	//return players config file
+	public YamlConfiguration getPlayerConfig(){
+		return pConfig;
+	}
+	
+	//return players config file
+	public YamlConfiguration getNamesConfig(){
+		return nConfig;
+	}
+	
+	//save the names.yml file
+	public void saveNames(YamlConfiguration n){
+		try {
+			n.save(names);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	//save the names.yml file
+	public void savePlayers(YamlConfiguration p){
+		try {
+			p.save(players);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
 }
 

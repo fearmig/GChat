@@ -1,6 +1,5 @@
 package org.mig.gchat.utils;
 
-import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -8,6 +7,8 @@ import java.util.UUID;
 
 import net.md_5.bungee.api.ChatColor;
 
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.mig.gchat.groups.Groups;
 
@@ -17,6 +18,7 @@ public class ThePlayer {
 	private String group;
 	private String mediaLink;
 	private String previousMessage = "";
+	private String uuid;
 	private ChatColor nameColor;
 	private ChatColor textColor;
 	private ChatColor groupColor;
@@ -26,30 +28,43 @@ public class ThePlayer {
 	private boolean groupBold;
 	private int chatMode = 0;
 	private final GChat main;
+	private YamlConfiguration pConfig;
+	private YamlConfiguration nConfig;
 	public List<UUID> onlinePlayers;
 	
 	//Constructor
 	public ThePlayer(Player p){
+		
 		main = GChat.getMain();
 		player = p;
+		uuid = "" + p.getUniqueId();
+		pConfig = main.getPlayerConfig();
+		nConfig = main.getNamesConfig();
 		
 		//if MySql is being used gather information from there
 		if(main.getConfig().getBoolean("MySql")){
 			try {
 				ResultSet rs = main.mysql.getPlayerAttr(player);
-				name = rs.getString("Name");
+				name = main.mysql.getName(player);
 				mediaLink = rs.getString("MediaLink");
 				group = rs.getString("Group");
+				
 				setAttributes();
+				
 			} catch (ClassNotFoundException | SQLException e) {
 				
 				//If connection to MySql database fails gather information from default configuration files.
 				
-				main.getLogger().info("Error: " + e);
-				name = player.getName();
+				main.getLogger().info("Error getting player's attributes: " + e);
 				
-				if(main.pConfig.contains(""+player.getUniqueId())){
-					mediaLink = main.pConfig.getString(""+player.getUniqueId()+".MediaLink");
+				//check if player name is on the forced rename list and if so give that name
+				if(nConfig.contains(uuid))
+					name = nConfig.getString(uuid);
+				else
+					name = player.getName();
+				
+				if(pConfig.contains(uuid)){
+					mediaLink = pConfig.getString(uuid);
 					if(mediaLink == null){
 						mediaLink = "";
 					}
@@ -65,11 +80,18 @@ public class ThePlayer {
 		}
 		//Gather information from default configuration files
 		else{
+			
 			Groups g = new Groups();
-			name = player.getName();
-			if(main.pConfig.contains(""+player.getUniqueId())){
+			
+			//check if player name is on the forced rename list and if so give that name
+			if(nConfig.contains(uuid))
+				name = nConfig.getString(uuid);
+			else
+				name = player.getName();
+			
+			if(pConfig.contains(uuid)){
 				group = g.getGroup(player);
-				mediaLink = main.pConfig.getString(""+player.getUniqueId()+".MediaLink");
+				mediaLink = pConfig.getString(uuid+".MediaLink");
 				if(mediaLink == null){
 					mediaLink = "";
 				}
@@ -88,9 +110,15 @@ public class ThePlayer {
 	private void setAttributes(){
 		nameColor = getColor((String)main.getConfig().get("Groups."+group+".nameColor"));
 		groupColor = getColor((String)main.getConfig().get("Groups."+group+".groupNameColor"));
-		textColor = getColor((String)main.getConfig().get("Groups."+group+".textColor"));
 		nameBold = (boolean)main.getConfig().get("Groups."+group+".nameBold");
 		textBold = (boolean)main.getConfig().get("Groups."+group+".textBold");
+		
+		//depending on if towny is enabled or not either set chat text to white color or to
+		//config set option.
+		if(Bukkit.getServer().getPluginManager().isPluginEnabled("Towny"))
+			textColor = ChatColor.WHITE;
+		else
+			textColor = getColor((String)main.getConfig().get("Groups."+group+".textColor"));
 	}
 	
 	//return color associated with config entry
@@ -136,9 +164,15 @@ public class ThePlayer {
 	public String getName(){
 		return name;
 	}
+	
 	//set a players name *possible implentation of Nicknames
 	public void setName(String n){
 		name = n;
+	}
+	
+	//return ThePlayer's UUID
+	public String getUUID(){
+		return uuid;
 	}
 	
 	//return the color of the name in chat
@@ -240,7 +274,7 @@ public class ThePlayer {
 		}
 		//write to the default Player config
 		else{
-			main.pConfig.set(""+player.getUniqueId()+".MediaLink", l);
+			pConfig.set(""+player.getUniqueId()+".MediaLink", l);
 			savePlayersYML();
 		}
 	}
@@ -252,10 +286,6 @@ public class ThePlayer {
 	
 	//save Player config file
 	public void savePlayersYML(){
-		try {
-			  main.pConfig.save(GChat.players);
-			} catch(IOException e) {
-				main.getLogger().info("Error: " + e);
-			}
+		main.savePlayers(pConfig);;
 	}
 }

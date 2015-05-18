@@ -22,6 +22,7 @@ public class MySqlMan {
 	//constructor
 	public MySqlMan(GChat g){
 		this.main = g;
+		g.getNamesConfig();
 	}
 	
 	//create a table if the the table does not exist already
@@ -37,6 +38,9 @@ public class MySqlMan {
 		Statement statementb = this.db.getConnection().createStatement();
 		statementb.executeUpdate("CREATE TABLE IF NOT EXISTS `badwords` (`BlockedWord` varchar(100), `Tier` varchar(10))");
 		statementb.close();
+		Statement statementc = this.db.getConnection().createStatement();
+		statementc.executeUpdate("CREATE TABLE IF NOT EXISTS `names` (`UUID` varchar(50), `Name` varchar(32))");
+		statementc.close();
 	}
 	
 	//close the connection to the database
@@ -52,6 +56,7 @@ public class MySqlMan {
 			this.db.openConnection();
 		Statement statement = this.db.getConnection().createStatement();
 		ResultSet rs = statement.executeQuery("SELECT * FROM `gchat` WHERE `UUID`='" + uuid +"';");
+		
 		if(!rs.first()){
 			statement.close();
 			return null;
@@ -60,34 +65,58 @@ public class MySqlMan {
 		
 	}
 	
+	//set a players name
+	public void setName(String uuid, String name) throws ClassNotFoundException, SQLException{
+		if(!this.db.checkConnection())
+			this.db.openConnection();
+		
+		Statement statement = this.db.getConnection().createStatement();
+		
+		//check to see if the player already has a changed name
+		Statement statementA = this.db.getConnection().createStatement();
+		ResultSet rsA = statementA.executeQuery("SELECT Name FROM `names` WHERE `UUID`='" + uuid +"';");
+		
+		//if a player exists update their entry
+		if(rsA.first()){
+			statement.executeUpdate("UPDATE `names` SET `Name`='"+name+"' WHERE `UUID`='" + uuid +"';");
+		}
+		//if a player didn't already exist in this table create their entry
+		else{
+			statement.executeUpdate("INSERT INTO `names` (`UUID`,`Name`) VALUES ('"
+					+uuid+"','"+name+"');");
+		}
+		statementA.close();
+		statement.close();
+	}
+	
 	//get the name of a player in the database by searching with their UUID
 	public String getName(Player p) throws ClassNotFoundException, SQLException{
 		String uuid = "" + p.getUniqueId(); 
+		String tempName;
+		
 		if(!this.db.checkConnection())
 			this.db.openConnection();
-		Statement statement = this.db.getConnection().createStatement();
-		ResultSet rs = statement.executeQuery("SELECT Name FROM `gchat` WHERE `UUID`='" + uuid +"';");
-		if(!rs.first()){
-			statement.close();
+		
+		//check if the user has a forced rename
+		Statement statementA = this.db.getConnection().createStatement();
+		ResultSet rsA = statementA.executeQuery("SELECT Name FROM `names` WHERE `UUID`='" + uuid +"';");
+		
+		if(rsA.first()){
+			tempName = rsA.getString("Name");
+			statementA.close();
+			return tempName;
+		}
+		
+		Statement statementB = this.db.getConnection().createStatement();
+		ResultSet rsB = statementB.executeQuery("SELECT Name FROM `gchat` WHERE `UUID`='" + uuid +"';");
+		
+		if(!rsB.first()){
+			statementB.close();
 			return null;
 		}
-		statement.close();
-		return rs.getString("Name");
-	}
-	
-	//get the group of a player in the database by searching with their UUID
-	public String getGroup(Player p) throws ClassNotFoundException, SQLException{
-		String uuid = "" + p.getUniqueId(); 
-		if(!this.db.checkConnection())
-			this.db.openConnection();
-		Statement statement = this.db.getConnection().createStatement();
-		ResultSet rs = statement.executeQuery("SELECT Group FROM `gchat` WHERE `UUID`='" + uuid +"';");
-		if(!rs.first()){
-			statement.close();
-			return null;
-		}
-		statement.close();
-		return rs.getString("Group");
+		tempName = rsB.getString("Name");
+		statementB.close();
+		return tempName;
 	}
 	
 	//update the player's information by gathering info and sending it to the database
@@ -143,9 +172,11 @@ public class MySqlMan {
 				BadWordHandler.badWords.add(rs.getString("BlockedWord"));
 				//badWordHandler.wordTier.add(rs.getString("Tier"));
 			}
+			statement.close();
 			return badWords;
 		}
 		else{
+			statement.close();
 			return badWords;
 		}
 	}
@@ -159,7 +190,6 @@ public class MySqlMan {
 		
 		ResultSet rs = statementa.executeQuery("SELECT * FROM `badwords` WHERE `BlockedWord`='" + w +"';");
 		if(!rs.first()){
-			main.getLogger().info("Hit1");
 			statement.executeUpdate("INSERT INTO `badwords` (`BlockedWord`,`Tier`) VALUES ('"
 					+w+"','"+t+"');");
 			statement.close();
@@ -179,4 +209,5 @@ public class MySqlMan {
 			statement.close();
 		}
 	}
+	
 }

@@ -27,18 +27,19 @@ public class ListenerClass implements Listener{
 			try {
 				main.mysql.updatePlayer(event.getPlayer());
 			} catch (ClassNotFoundException | SQLException e) {
-				main.getLogger().info("Error: " + e);
+				main.getLogger().info("Error on join: " + e);
 				main.getConfig().set("MySql", false);
 			}
 		}
 		ThePlayer tp = new ThePlayer(event.getPlayer());
 		GChat.onlinePlayers.add(tp);
 		final Player p = event.getPlayer();
+		
 		//Set display for Player Tab List if in config the option is true
 		if(main.getConfig().getBoolean("TabPlayerList")){
-			tempName = p.getName();
+			tempName = tp.getName();
 			if(tempName.length()>=15)
-				tempName = p.getName().substring(0,14);
+				tempName = tp.getName().substring(0,14);
 			p.setPlayerListName(tp.getNameColor()+tempName);
 		}
 		

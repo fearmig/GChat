@@ -1,15 +1,19 @@
 package org.mig.gchat.commands;
 
+import java.sql.SQLException;
+
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.mig.gchat.chat.filter.BadWordHandler;
 import org.mig.gchat.utils.GChat;
 import org.mig.gchat.utils.MinechatCompatability;
+import org.mig.gchat.utils.ThePlayer;
 
 public class Commands implements CommandExecutor{
 	//initialize class that handles bad language
@@ -61,6 +65,11 @@ public class Commands implements CommandExecutor{
 				case "help":
 					//send help message
 					help(p);
+					break;
+				case "rename":
+					//rename the player
+					if(p.hasPermission("gchat.admin"))
+						renamePlayer(args, p);
 					break;
 				default:
 					p.sendMessage(ChatColor.RED + "Incorrect /gchat command. Please do " + ChatColor.GOLD +
@@ -121,9 +130,9 @@ public class Commands implements CommandExecutor{
 	//remove a word from the blocked words list
 	private void unblockWord(String args [], Player p){
 		p.sendMessage(ChatColor.WHITE + "The word '" + ChatColor.RED + args[1] + ChatColor.WHITE + "' has been unblocked.");
-		String word = args[1].replace('_', ' ');
+		String word = (args[1].replace('_', ' ')).toLowerCase();
 		if(args.length==2){
-			if(bw.isBadWord(word.toLowerCase()))
+			if(bw.isBadWord(word))
 				bw.removeBadWord(word);	
 		}
 		
@@ -221,7 +230,50 @@ public class Commands implements CommandExecutor{
 			p.sendMessage(ChatColor.AQUA + "/gchat blockword {word}" + ChatColor.GOLD + " ~ Add word to blocked word list");
 			p.sendMessage(ChatColor.AQUA + "/gchat unblockword {word}" + ChatColor.GOLD + " ~ remove word from blocked word list");
 			p.sendMessage(ChatColor.AQUA + "/gchat importwords" + ChatColor.GOLD + " ~ import badword list to MySql");
+			p.sendMessage(ChatColor.AQUA + "/gchat rename {playerName} {newName}" + ChatColor.GOLD + " ~ rename a player");
 		}
 		
+	}
+	
+	//rename a player
+	private void renamePlayer(String args[], Player p){
+		GChat main = GChat.getMain();
+		YamlConfiguration nConfig = main.getPlayerConfig();
+		ThePlayer tp;
+		
+		//try to get the Player Object
+		Player player = (Player) Bukkit.getPlayer(args[1]);
+		
+		//update the player to nConfig
+		if(player!=null){
+			
+			//set the players name in ThePlayer class
+			tp = GChat.getThePlayer(player);
+			tp.setName(args[2]);
+			
+			if(main.getConfig().getBoolean("MySql")){
+				try {
+					main.mysql.setName(tp.getUUID(), args[2]);
+				} catch (ClassNotFoundException | SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			else{
+				nConfig.set(tp.getUUID(), args[1]);
+				main.saveNames(nConfig);
+			}
+			
+			//change name in player tab list if enabled
+			if(main.getConfig().getBoolean("TabPlayerList")){
+				if(args[2].length()>=15)
+					args[2] = p.getName().substring(0,14);
+				p.setPlayerListName(tp.getNameColor()+args[2]);
+			}
+			
+			//send confirmation to user
+			p.sendMessage(ChatColor.AQUA + args[1] + ChatColor.WHITE + " name has been changed to " + ChatColor.AQUA + tp.getName());
+			
+		}	
 	}
 }
