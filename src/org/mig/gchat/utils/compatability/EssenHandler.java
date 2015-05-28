@@ -29,4 +29,13 @@ public class EssenHandler {
 		}
 		return false;
 	}
+	
+	// return if the player is vanished or not
+	public boolean isVanished(Player p){
+		if(ess.getUser(p).isVanished())
+			return true;
+		else
+			return false;
+	}
+	
 }

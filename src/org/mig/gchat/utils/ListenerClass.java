@@ -11,18 +11,20 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+
 import org.mig.gchat.chat.ChatControl;
+import org.mig.gchat.chat.NameDisplayController;
 
 //This class handles all the listners
 public class ListenerClass implements Listener{
 	private static ArrayList<Player> newPlayerList = new ArrayList<Player>();
+	private NameDisplayController nc;
 	
 	//when a player joins gather the info of the player and create a new ThePlayer object
 	@EventHandler
 	public void onJoin(PlayerJoinEvent event ){
 		GChat main = GChat.getMain();
 		
-		String tempName;
 		if(main.getConfig().getBoolean("MySql")){
 			try {
 				main.mysql.updatePlayer(event.getPlayer());
@@ -35,13 +37,9 @@ public class ListenerClass implements Listener{
 		GChat.onlinePlayers.add(tp);
 		final Player p = event.getPlayer();
 		
-		//Set display for Player Tab List if in config the option is true
-		if(main.getConfig().getBoolean("TabPlayerList")){
-			tempName = tp.getName();
-			if(tempName.length()>=15)
-				tempName = tp.getName().substring(0,14);
-			p.setPlayerListName(tp.getNameColor()+tempName);
-		}
+		//set up formatting of name in tab list and above players head.
+		nc = new NameDisplayController(tp);
+		nc.setTabList();
 		
 		//added to list used for mine chat check
 		newPlayerList.add(p);

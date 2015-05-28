@@ -26,55 +26,60 @@ public class Commands implements CommandExecutor{
 		if(sender instanceof Player){
 			Player p = (Player) sender;
 			
-			switch(args[0]){
-				case "on":
-					//turn Mine chat mode on
-					minechatOn(args, p);
-					break;
-				case "off":
-					//turn Mine chat mode off
-					minechatOff(args, p);
-					break;
-				case "blockword":
-					//block word from being said in chat
-					if(p.hasPermission("gchat.admin"))
-						blockWord(args, p);
-					break;
-				case "unblockword":
-					//unblock word from being said in chat
-					if(p.hasPermission("gchat.admin"))
-						unblockWord(args, p);
-					break;
-				case "importwords":
-					//import words into sql table
-					if(p.hasPermission("gchat.admin"))
-						importWords(args, p);
-					break;
-				case "set":
-					//Home to medialinks (so far)
-					if(p.hasPermission("gchat.medialinks"))
-						set(args, p);
-					else
-						p.sendMessage(ChatColor.GREEN + "If you would like a Social Media Link please visit our store on GorillaCraft.com");
-					break;
-				case "spy":
-					//turn on spychat mode
-					if(p.hasPermission("gchat.admin"))
-						spyMode(args, p);
-					break;
-				case "help":
-					//send help message
-					help(p);
-					break;
-				case "rename":
-					//rename the player
-					if(p.hasPermission("gchat.admin"))
-						renamePlayer(args, p);
-					break;
-				default:
-					p.sendMessage(ChatColor.RED + "Incorrect /gchat command. Please do " + ChatColor.GOLD +
+			if(args.length==0){
+				p.sendMessage(ChatColor.RED + "Incorrect /gchat command. Please do " + ChatColor.GOLD +
+						"/gchat help" + ChatColor.RED + "for help with gchat commands.");
+			}
+			else{
+				switch(args[0]){
+					case "on":
+						//turn Mine chat mode on
+						minechatOn(args, p);
+						break;
+					case "off":
+						//turn Mine chat mode off
+						minechatOff(args, p);
+						break;
+					case "blockword":
+						//block word from being said in chat
+						if(p.hasPermission("gchat.admin"))
+							blockWord(args, p);
+						break;
+					case "unblockword":
+						//unblock word from being said in chat
+						if(p.hasPermission("gchat.admin"))
+							unblockWord(args, p);
+						break;
+					case "importwords":
+						//import words into sql table
+						if(p.hasPermission("gchat.admin"))
+							importWords(args, p);
+						break;
+					case "set":
+						//Home to medialinks (so far)
+						if(p.hasPermission("gchat.medialinks"))
+							set(args, p);
+						else
+							p.sendMessage(ChatColor.GREEN + "If you would like a Social Media Link please visit our store on GorillaCraft.com");
+						break;
+					case "spy":
+						//turn on spychat mode
+						if(p.hasPermission("gchat.admin"))
+							spyMode(args, p);
+						break;
+					case "help":
+						//send help message
+						help(p);
+						break;
+					case "rename":
+						//rename the player
+						if(p.hasPermission("gchat.admin"))
+							renamePlayer(args, p);
+						break;
+					default:
+						p.sendMessage(ChatColor.RED + "Incorrect /gchat command. Please do " + ChatColor.GOLD +
 							"/gchat help" + ChatColor.RED + "for help with gchat commands.");
-					break;
+				}
 			}
 		}
 		return false;

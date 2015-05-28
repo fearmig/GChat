@@ -109,6 +109,8 @@ public class ChatControl{
 		//test message for bad words
 		String temp = bw.testMessage(message);
 		boolean spam = sb.checkSpam(tplayer, message);
+		//set previous message for anti-spam
+		tplayer.setPrevMess(message);
 		
 		if(temp != null){
 			//if the message contained a bad word stop the message from being put into chat and
@@ -120,7 +122,7 @@ public class ChatControl{
 			return;
 		}
 		//check if player sent the same message, anti-spam
-		else if(spam && !player.hasPermission("gchat.capexempt")){
+		else if(spam){
 			player.spigot().sendMessage(new TextComponent( new ComponentBuilder("Please do not spam the same message").color(ChatColor.RED).create()));
 		}
 		//if the message passed the language chat send it to chat
@@ -164,8 +166,7 @@ public class ChatControl{
 		}
 		//write message to console for logging, maybe future toggle option in config
 		main.getLogger().info(name + ": " + message);
-		//set previous message for anti-spam
-		tplayer.setPrevMess(message);
+		
 	}
 	
 	//Methods to give temp attributes in the case of a command such as /tc Some text here

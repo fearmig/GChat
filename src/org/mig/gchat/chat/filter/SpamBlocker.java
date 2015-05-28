@@ -27,7 +27,7 @@ public class SpamBlocker {
 	
 	//check for spamming messages
 	public boolean checkSpam(ThePlayer tplayer, String message){
-		if(tplayer.getPrevMess().equals(message)){
+		if(tplayer.getPrevMess().equalsIgnoreCase(message)){
 			return true;
 		}
 		return false;

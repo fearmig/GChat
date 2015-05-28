@@ -45,15 +45,15 @@ public class MySqlMan {
 	
 	//close the connection to the database
 	public void closeDB() throws SQLException{
-		this.db.closeConnection();
+		db.closeConnection();
 	}
 	
-	//run a query to retrive the information of a player
+	//run a query to retrieve the information of a player
 	public ResultSet getPlayerAttr(Player p) throws SQLException, ClassNotFoundException{
 		String uuid = "" + p.getUniqueId();
 		
-		if(!this.db.checkConnection())
-			this.db.openConnection();
+		if(!db.checkConnection())
+			db.openConnection();
 		Statement statement = this.db.getConnection().createStatement();
 		ResultSet rs = statement.executeQuery("SELECT * FROM `gchat` WHERE `UUID`='" + uuid +"';");
 		
@@ -99,7 +99,7 @@ public class MySqlMan {
 		
 		//check if the user has a forced rename
 		Statement statementA = this.db.getConnection().createStatement();
-		ResultSet rsA = statementA.executeQuery("SELECT Name FROM `names` WHERE `UUID`='" + uuid +"';");
+		ResultSet rsA = statementA.executeQuery("SELECT Name FROM `players` WHERE `UUID`='" + uuid +"';");
 		
 		if(rsA.first()){
 			tempName = rsA.getString("Name");
