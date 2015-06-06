@@ -40,7 +40,7 @@ public class GChat extends JavaPlugin{
 	static ArrayList<UUID> mChatList = new ArrayList<UUID>();
 	public static ArrayList<ThePlayer> onlinePlayers = new ArrayList<ThePlayer>();
 	
-	//these represent the players config file
+	//these represent the players and names config file
 	private static File players;
 	private static File names;
 	private YamlConfiguration pConfig;
@@ -127,6 +127,8 @@ public class GChat extends JavaPlugin{
 		return null;
 	}
 	
+	
+	// get the default values for the confiuration files names and players if they don't exist already
 	private void getConfigs(){
 		if(!names.exists()){
 			names.getParentFile().mkdirs();
@@ -137,6 +139,8 @@ public class GChat extends JavaPlugin{
 			copy(getResource("players.yml"), players);
 		}
 	}
+
+	// copy default values into newly created config files
 	private void copy(InputStream i, File f){
 		 try {
 		        OutputStream out = new FileOutputStream(f);
@@ -185,8 +189,6 @@ public class GChat extends JavaPlugin{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	
-	
+	}	
 }
 

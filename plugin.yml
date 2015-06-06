@@ -2,7 +2,7 @@ name: GChat
 description: Make chat into JSON awesomeness and more
 author: FearMig
 website: www.github.com/fearmig
-version: 2.2
+version: 2.3
 main: org.mig.gchat.utils.GChat
 
 softdepend: [Essentials,Towny,PermissionsEX,GroupManager]

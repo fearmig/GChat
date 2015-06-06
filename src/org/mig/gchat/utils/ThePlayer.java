@@ -17,12 +17,12 @@ public class ThePlayer {
 	private String name;
 	private String group;
 	private String mediaLink;
-	private String previousMessage = "";
 	private String uuid;
+	private String previousMessage = "";
 	private ChatColor nameColor;
 	private ChatColor textColor;
 	private ChatColor groupColor;
-	private boolean spyMode = false;
+	private boolean spyMode = true;
 	private boolean nameBold;
 	private boolean textBold;
 	private boolean groupBold;
@@ -211,6 +211,16 @@ public class ThePlayer {
 		nameBold = n;
 	}
 	
+	//set players previous message for anti-spam
+	public void setPrevMess(String s) {
+		previousMessage = s;
+	}
+
+	// get players previous message for anti-spam
+	public String getPrevMess() {
+		return previousMessage;
+	}
+	
 	//return if the text is bold
 	public boolean getTextBold(){
 		return textBold;
@@ -227,16 +237,6 @@ public class ThePlayer {
 	//set if the group is bold
 	public void setGroupBold(boolean n){
 		groupBold = n;
-	}
-	
-	//set players previous message for anti-spam
-	public void setPrevMess(String s){
-		previousMessage = s;
-	}
-	
-	//get players previous message for anti-spam
-	public String getPrevMess(){
-		return previousMessage;
 	}
 	
 	//Using ints for chatmode, 0 = Global, 1 = Admin, 2 = Town, 3 = Nation
