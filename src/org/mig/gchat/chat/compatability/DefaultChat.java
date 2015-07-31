@@ -6,7 +6,8 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
-import org.mig.gchat.utils.ThePlayer;
+import org.mig.gchat.GChat;
+import org.mig.gchat.objects.ThePlayer;
 
 //The sole purpose of this class is to build the default message that is to be sent out.
 
@@ -24,17 +25,17 @@ public class DefaultChat {
 	private ChatColor nameColor;
 	
 	//constructor
-	public DefaultChat(ThePlayer tp, String m, ChatColor mc){
+	public DefaultChat(ThePlayer tp, String m, ChatColor mc, GChat main){
 		
 		name = tp.getName();
 		group = tp.getGroup();
 		mediaLink = tp.getMediaLink();
-		nameColor = tp.getNameColor();
-		boldA = tp.getNameBold();
+		nameColor = main.getGroupModule().getGroup(tp.getGroup()).getNameColor();
+		boldA = main.getGroupModule().getGroup(tp.getGroup()).isNameBold();
 		messageColor = mc;
-		boldM = tp.getTextBold();
-		groupColor = tp.getGroupColor();
-		boldG = tp.getGroupBold();
+		boldM = main.getGroupModule().getGroup(tp.getGroup()).isTextBold();
+		groupColor = main.getGroupModule().getGroup(tp.getGroup()).getGroupNameColor();
+		boldG = main.getGroupModule().getGroup(tp.getGroup()).isGroupBold();
 		message = m;
 	}
 	
@@ -45,7 +46,7 @@ public class DefaultChat {
 		fullM = new TextComponent[2];
 		
 		//Build message including media link if the player has it
-		if(!mediaLink.equals("")){
+		if(mediaLink!= null && !mediaLink.equals("")){
 			fullM[0] = new TextComponent( new ComponentBuilder(name + ": ").color(nameColor).bold(boldA)
 					.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(group +"\n"+mediaLink)
 					.color(groupColor).bold(boldG).create())).event(new ClickEvent(ClickEvent.Action

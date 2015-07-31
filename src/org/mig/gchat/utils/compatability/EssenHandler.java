@@ -32,10 +32,19 @@ public class EssenHandler {
 	
 	// return if the player is vanished or not
 	public boolean isVanished(Player p){
-		if(ess.getUser(p).isVanished())
-			return true;
+		if(ess.getUser(p)!=null)
+			return ess.getUser(p).isVanished();
 		else
 			return false;
 	}
 	
+	/*
+	 * return if a user is muted
+	 */
+	public boolean isMuted(Player p){
+		if(ess.getUser(p)!=null)
+			return ess.getUser(p).isMuted();
+		else
+			return false;
+	}
 }

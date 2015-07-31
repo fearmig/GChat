@@ -34,6 +34,10 @@ Groups:
 # the color of their name in chat
 TabPlayerList: true
 
+# Have GChat format the over the players head name. This will change the color
+# of their name to the same as the group that they are in.
+OverHeadFormating: true
+
 # How many capital letters are allowed before the message is converted to all
 # lower case
 CapsAllowed: 4

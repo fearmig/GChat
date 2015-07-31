@@ -4,7 +4,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mig.gchat.utils.GChat;
+import org.mig.gchat.GChat;
+import org.mig.gchat.async.AsyncAddBadWord;
+import org.mig.gchat.async.AsyncRemoveBadWord;
+import org.mig.gchat.async.AsyncRetrieveBadWords;
 
 
 //This class handles testing a message to see if it may contain a word on
@@ -16,8 +19,12 @@ public class BadWordHandler {
 	public static List <String> badWords = new ArrayList<String>();
 	private static List <String> wordTier = new ArrayList<String>();
 	
+	private GChat main;
+	
 	//get an object of the main class
-	private GChat main = GChat.getMain();
+	public BadWordHandler(GChat main){
+		this.main = main;
+	}
 	
 	//test to see if the word is on the forbidden list and if so return true
 	public boolean isBadWord(String word){
@@ -45,7 +52,10 @@ public class BadWordHandler {
 		badWords.add(w);
 		if(main.getConfig().getBoolean("MySql")){
 			try {
-				main.mysql.addWord(w, "1");
+				AsyncAddBadWord abw = new AsyncAddBadWord(main, w, "1");
+				abw.runTaskAsynchronously(main);
+				AsyncRetrieveBadWords arbw = new AsyncRetrieveBadWords(main);
+				arbw.runTaskLaterAsynchronously(main, 100);
 			} catch (ClassNotFoundException | SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -62,9 +72,11 @@ public class BadWordHandler {
 		badWords.remove(w);
 		if(main.getConfig().getBoolean("MySql")){
 			try {
-				main.mysql.removeWord(w);
+				AsyncRemoveBadWord rbw = new AsyncRemoveBadWord(main, w);
+				rbw.runTaskAsynchronously(main);
+				AsyncRetrieveBadWords arbw = new AsyncRetrieveBadWords(main);
+				arbw.runTaskLaterAsynchronously(main, 100);
 			} catch (ClassNotFoundException | SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -78,7 +90,9 @@ public class BadWordHandler {
 	public void fillList(){
 		if(main.getConfig().getBoolean("MySql")){
 			try {
-				badWords = main.mysql.retrieveBadWords();
+				AsyncRetrieveBadWords rbw = new AsyncRetrieveBadWords(main);
+				rbw.runTaskAsynchronously(main);
+				
 			} catch (ClassNotFoundException | SQLException e) {
 				e.printStackTrace();
 			}
@@ -103,7 +117,9 @@ public class BadWordHandler {
 		for(int i = 0; i < badWords.size(); i++){
 			main.getLogger().info("Added " + badWords.get(i) + "to MySQL");
 			try {
-				main.mysql.addWord(badWords.get(i),BadWordHandler.wordTier.get(i));
+				AsyncAddBadWord abw = new AsyncAddBadWord(main, badWords.get(i)
+						,BadWordHandler.wordTier.get(i));
+				abw.runTaskAsynchronously(main);
 			} catch (ClassNotFoundException | SQLException e) {
 				e.printStackTrace();
 				return false;
@@ -117,6 +133,9 @@ public class BadWordHandler {
 	public String testMessage(String m){
 		//make the message lowercase and remove special characters.
 		m = m.toLowerCase();
+		m = m.replace('0', 'o');
+		m = m.replace('$', 's');
+		m = m.replace('!', 'i');
 		m = m.replaceAll("[^\\dA-Za-z ]", "");
 		if(badWords!=null){
 			

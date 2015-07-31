@@ -2,8 +2,8 @@ name: GChat
 description: Make chat into JSON awesomeness and more
 author: FearMig
 website: www.github.com/fearmig
-version: 2.3
-main: org.mig.gchat.utils.GChat
+version: 2.6
+main: org.mig.gchat.GChat
 
 softdepend: [Essentials,Towny,PermissionsEX,GroupManager]
 
@@ -15,8 +15,17 @@ commands:
     description: Go into Town chat mode.
   g:
     description: Go into Global chat mode.
-    
   nc:
     description: /Go into Nation chat mode.
   ac:
     description: /Go into Admin chat mode.
+  clearchat:
+    description: Clears the chat box.
+    aliases: [cchat]
+  link:
+    description: Sends a clickable link in chat.
+    aliases: [l]
+  globalmute:
+    description: Mutes the chat from anyone speaking unless they have permission.
+  report:
+    description: used only by the plugin, should not be run normally.

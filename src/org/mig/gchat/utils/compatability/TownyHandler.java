@@ -89,7 +89,15 @@ public class TownyHandler {
 	//return a resident's surname
 	public String getSur(){
 		if(r.hasSurname())
-			return (r.getSurname() + " ");
+			return r.getSurname();
+		else
+			return "";
+	}
+	
+	//return a resident's title
+	public String getTitle(){
+		if(r.hasTitle())
+			return r.getTitle();
 		else
 			return "";
 	}

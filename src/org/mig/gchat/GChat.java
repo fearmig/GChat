@@ -1,4 +1,4 @@
-package org.mig.gchat.utils;
+package org.mig.gchat;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -12,12 +12,21 @@ import java.util.UUID;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mig.gchat.async.AsyncRetrieveBadWords;
 import org.mig.gchat.chat.filter.BadWordHandler;
+import org.mig.gchat.commands.ClearChat;
 import org.mig.gchat.commands.Commands;
 import org.mig.gchat.commands.AdminChatCommand;
 import org.mig.gchat.commands.GlobalChatCommand;
+import org.mig.gchat.commands.GlobalMute;
+import org.mig.gchat.commands.SendLink;
 import org.mig.gchat.commands.towny.NationChatCommand;
 import org.mig.gchat.commands.towny.TownChatCommand;
+import org.mig.gchat.modules.GroupModule;
+import org.mig.gchat.modules.ThePlayerModule;
+import org.mig.gchat.utils.ListenerClass;
+import org.mig.gchat.utils.MySqlMan;
+import org.mig.gchat.utils.ScoreboardBuilder;
 
 /*This is GChat, a plugin built to improve chat in minecraft servers that run spigot as their base
  * build. It creates custome JSON messages that display information anywhere from youtube channels, which
@@ -26,19 +35,20 @@ import org.mig.gchat.commands.towny.TownChatCommand;
  * This class is the Main and extends JavaPlugin which is what taps us into the game
  */
 public class GChat extends JavaPlugin{
-	private static GChat main;
+	//private static GChat main;
 	
 	//the boolean which shows if essentials is used by the server
 	public static boolean essen = false;
 	
 	//class variables
-	public final ListenerClass l = new ListenerClass();
 	public MySqlMan mysql = new MySqlMan(this);
-	public BadWordHandler bwh;
+	private static ThePlayerModule thePlayerModule;
+	private static GroupModule groupModule;
+	private BadWordHandler bwh;
+	private ScoreboardBuilder sb;
 	
 	//lists used to track online players and minechat users
 	static ArrayList<UUID> mChatList = new ArrayList<UUID>();
-	public static ArrayList<ThePlayer> onlinePlayers = new ArrayList<ThePlayer>();
 	
 	//these represent the players and names config file
 	private static File players;
@@ -50,7 +60,6 @@ public class GChat extends JavaPlugin{
 		//try to create a default config file but don't do anything if one already exists
 		getConfig().options().copyDefaults(true);
 		saveDefaultConfig();
-		main = this;
 		
 		//try to create a default config for names and players
 		players = new File(getDataFolder(), "players.yml");
@@ -65,14 +74,17 @@ public class GChat extends JavaPlugin{
 			essen = true;
 		}
 		
-		//set up MySql table if enabled
+		//Compile the Group objects list
+		groupModule = new GroupModule();
+		groupModule.compileGChatGroups(this);
 		
-		bwh = new BadWordHandler();
+		bwh = new BadWordHandler(this);
 		//if MySql is being used initiate the class and gather information
 		if(getConfig().getBoolean("MySql")){
 			try {
 				this.mysql.setupDB();
-				this.mysql.retrieveBadWords();
+				AsyncRetrieveBadWords abw = new AsyncRetrieveBadWords(this);
+				abw.runTaskAsynchronously(this);
 			} catch (ClassNotFoundException | SQLException e) {
 				//if unable to establish MySql connection print the error and reach out to default config
 				//to gather bad words.
@@ -85,24 +97,38 @@ public class GChat extends JavaPlugin{
 		else{
 			bwh.fillList();
 		}
+		//main = this;
 		
-		getServer().getPluginManager().registerEvents(this.l, this);
+		/*
+		 * Set up the scoreboard
+		 */
+		sb = new ScoreboardBuilder(this);
+		sb.setGroupColors();
+		
+		//get all the online players and put them into the map held in ThePlayerModule
+		thePlayerModule = new ThePlayerModule(this);
+		for(Player p: getServer().getOnlinePlayers()){
+			try {
+				thePlayerModule.createPlayer(p);
+			} catch (ClassNotFoundException | SQLException e) {
+			// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
 		
 		//register commands
-		getCommand("gchat").setExecutor(new Commands());
-		getCommand("tc").setExecutor(new TownChatCommand());
-		getCommand("nc").setExecutor(new NationChatCommand());
-		getCommand("g").setExecutor(new GlobalChatCommand());
-		getCommand("ac").setExecutor(new AdminChatCommand());
+		getCommand("gchat").setExecutor(new Commands(this));
+		getCommand("tc").setExecutor(new TownChatCommand(this));
+		getCommand("nc").setExecutor(new NationChatCommand(this));
+		getCommand("g").setExecutor(new GlobalChatCommand(this));
+		getCommand("ac").setExecutor(new AdminChatCommand(this));
+		getCommand("clearchat").setExecutor(new ClearChat(this));
+		getCommand("link").setExecutor(new SendLink(this));
+		getCommand("globalmute").setExecutor(new GlobalMute(this));
 		
-		//get all the online players and put them into the List
-		for(Player p: getServer().getOnlinePlayers()){
-			ThePlayer tp = new ThePlayer(p);
-			if(!onlinePlayers.contains(tp)){
-				onlinePlayers.add(tp);
-			}
-		}
-		main = this;
+		getServer().getPluginManager().registerEvents(new ListenerClass(this), this);
+		//main = this;
 	}
 	
 	//when plugin is disabled if using MySql close the connection
@@ -115,18 +141,6 @@ public class GChat extends JavaPlugin{
 			}
 		}
 	}
-	
-	//return thePlayer object which is this plugins object to represent the player.
-	public static ThePlayer getThePlayer(Player p){
-		if(onlinePlayers!=null){
-			for(ThePlayer tp: onlinePlayers){
-				if(tp.getUUID().equalsIgnoreCase("" + p.getUniqueId()))
-					return tp;
-			}
-		}
-		return null;
-	}
-	
 	
 	// get the default values for the confiuration files names and players if they don't exist already
 	private void getConfigs(){
@@ -157,9 +171,9 @@ public class GChat extends JavaPlugin{
 	}
 	
 	//return the static instance of itself
-	public static GChat getMain(){
-		return main;
-	}
+	//public static GChat getMain(){
+		//return main;
+	//}
 	
 	//return players config file
 	public YamlConfiguration getPlayerConfig(){
@@ -189,6 +203,20 @@ public class GChat extends JavaPlugin{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}	
+	}
+	
+	/*
+	 * return ThePlayerModule
+	 */
+	public ThePlayerModule getThePlayerModule(){
+		return thePlayerModule;
+	}
+	
+	/*
+	 * return GroupModule
+	 */
+	public GroupModule getGroupModule(){
+		return groupModule;
+	}
 }
 

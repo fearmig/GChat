@@ -14,7 +14,7 @@ import org.bukkit.plugin.Plugin;
  * @author -_Husky_-
  * @author tips48
  */
-public abstract class Database {
+public abstract class Database { 
 
 	protected Connection connection;
 	

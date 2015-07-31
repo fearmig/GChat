@@ -9,17 +9,20 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.mig.gchat.GChat;
 import org.mig.gchat.chat.compatability.DefaultChat;
+import org.mig.gchat.chat.compatability.SurvivalGamesChat;
 import org.mig.gchat.chat.compatability.TownyChat;
 import org.mig.gchat.chat.filter.SpamBlocker;
 import org.mig.gchat.chat.filter.BadWordHandler;
-import org.mig.gchat.utils.GChat;
+import org.mig.gchat.objects.ThePlayer;
 import org.mig.gchat.utils.MinechatCompatability;
-import org.mig.gchat.utils.ThePlayer;
 import org.mig.gchat.utils.compatability.EssenHandler;
 
 //should control just about everything that comes to the chat.
 public class ChatControl{
+	
+	private static boolean globalMuteActive = false;
 	
 	private String message;
 	private String name;
@@ -32,25 +35,32 @@ public class ChatControl{
 	private ChatColor nameColor;
 	private List<Player> recipients = new ArrayList<Player>();
 	
-	private GChat main = GChat.getMain();
+	private GChat main;
 	
 	//spam blockers
-	private BadWordHandler bw = new BadWordHandler();
-	private SpamBlocker sb = new SpamBlocker();
+	private BadWordHandler bw;
+	private SpamBlocker sb;
 	
 	// Constructors
-	public ChatControl(){
+	public ChatControl(GChat main){
+		this.main = main;
+		bw  = new BadWordHandler(main);
 	}
-	public ChatControl(ThePlayer tp, String m, boolean mc){
+	
+	public ChatControl(ThePlayer tp, String m, boolean mc, GChat main){
+		this.main = main;
 		tplayer = tp;
 		message = m;
 		player = tp.getPlayer();
 		name = tplayer.getName();
 		group = tplayer.getGroup();
 		minechatToggle = mc;
-		nameColor = tplayer.getNameColor();
-		messageColor = tplayer.getTextColor();
+		
+		nameColor = main.getGroupModule().getGroup(tp.getGroup()).getNameColor();
+		messageColor = main.getGroupModule().getGroup(tp.getGroup()).getTextColor();
 		chatMode = tplayer.getChatMode();
+		sb = new SpamBlocker(main);
+		bw  = new BadWordHandler(main);
 	}
 	
 	//set message
@@ -109,27 +119,30 @@ public class ChatControl{
 		//test message for bad words
 		String temp = bw.testMessage(message);
 		boolean spam = sb.checkSpam(tplayer, message);
+		
 		//set previous message for anti-spam
-		tplayer.setPrevMess(message);
+		main.getThePlayerModule().getThePlayer(tplayer.getUuid()).setPreviousMessage(message);
 		
 		if(temp != null){
 			//if the message contained a bad word stop the message from being put into chat and
 			//send those with "gchat.admin" a messages stating they tried to curse
-			player.spigot().sendMessage(new TextComponent( new ComponentBuilder("Please do not use that language in here").color(ChatColor.RED).create()));
-			adminGroupMessage(ChatColor.RED + player.getName() + " tried to curse by saying:", false);
+			player.spigot().sendMessage(new TextComponent( new ComponentBuilder("Please do not use that language in here")
+					.color(ChatColor.RED).create()));
+			main.getServer().broadcast(ChatColor.RED + player.getName() + " tried to curse by saying:", "gchat.mod");
 			message = message.replace(temp,ChatColor.RED + temp + ChatColor.WHITE);
-			adminGroupMessage(message, false);
+			main.getServer().broadcast(message, "gchat.mod");
 			return;
 		}
 		//check if player sent the same message, anti-spam
-		else if(spam){
-			player.spigot().sendMessage(new TextComponent( new ComponentBuilder("Please do not spam the same message").color(ChatColor.RED).create()));
+		else if(spam && !player.hasPermission("gchat.spamexempt")){
+			player.spigot().sendMessage(new TextComponent( new ComponentBuilder("Please do not spam the same message")
+					.color(ChatColor.RED).create()));
 		}
 		//if the message passed the language chat send it to chat
 		else{
 			
 			//check for too many caps in message unless player has "gchat.capexempt"
-			if(!player.hasPermission("gchat.capexempt")){
+			if(!player.hasPermission("gchat.spamexempt")){
 				message = sb.checkCaps(message);
 			}
 			
@@ -144,17 +157,54 @@ public class ChatControl{
 						break;
 			}
 			
-			
-			if(Bukkit.getServer().getPluginManager().isPluginEnabled("Towny")){
-				TownyChat tc = new TownyChat(tplayer, message, messageColor);
+			/*
+			 * Check if towny is enabled and if so build recipeients depending on the chat mode.
+			 */
+			if (Bukkit.getServer().getPluginManager().isPluginEnabled("Towny")) {
+				if(chatMode==0){
+					messageColor = ChatColor.WHITE;
+				}
+				
+				TownyChat tc = new TownyChat(tplayer, message, messageColor, main);
 				fullM = tc.buildMessage();
-				if(chatMode ==2)
+				if (chatMode == 2)
 					recipients = tc.townMembers();
-				else if(chatMode == 3)
+				else if (chatMode == 3)
 					recipients = tc.nationMembers();
+				else
+					
+				
+				for (String s : main.getThePlayerModule().getOnlineThePlayers().keySet()) {
+					if (main.getThePlayerModule().getThePlayer(s)
+							.getPlayer().hasPermission("gchat.adminChat")) {
+						if (main.getThePlayerModule().getThePlayer(s).isSpyMode()) {
+							if (!recipients.contains(main.getThePlayerModule()
+									.getThePlayer(s).getPlayer())) {
+								recipients.add(main.getThePlayerModule()
+										.getThePlayer(s).getPlayer());
+							}
+						}
+					}
+				}
+			}
+			
+			/*
+			 * test for survival games and format if player dies
+			 */
+			else if (Bukkit.getServer().getPluginManager().isPluginEnabled("SurvivalGames")) {
+				SurvivalGamesChat sc = new SurvivalGamesChat(tplayer, message, messageColor, main);
+				fullM = sc.buildMessage();
+				try{
+					if(sc.getAllSpecs(tplayer.getName()).contains(tplayer.getPlayer())){
+						chatMode = 1;
+						recipients = sc.getAllSpecs(tplayer.getName());
+					}
+				} catch(NullPointerException e){
+					
+				}
 			}
 			else{
-				DefaultChat dc = new DefaultChat(tplayer, message, messageColor);
+				DefaultChat dc = new DefaultChat(tplayer, message, messageColor, main);
 				fullM = dc.buildMessage();
 			}
 			
@@ -169,11 +219,12 @@ public class ChatControl{
 		
 	}
 	
-	//Methods to give temp attributes in the case of a command such as /tc Some text here
-	//This way the user can send a single message in a chat channel instead of having to switch
-	//between modes.
+	/*
+	 * Methods to give temp attributes in the case of a command such as /tc Some text here
+	 * This way the user can send a single message in a chat channel instead of having to switch
+	 * between modes.
+	 */
 	public void startSingleGlobalMessage(){
-		messageColor = ChatColor.WHITE;
 		chatMode = 0;
 		chat();
 	}
@@ -195,24 +246,26 @@ public class ChatControl{
 	
 	//send a global message
 	private void sendGlobalMessage(TextComponent[] fullM){
-		for(ThePlayer b: GChat.onlinePlayers){
+		for(String b: main.getThePlayerModule().getOnlineThePlayers().keySet()){
 			boolean ignored = false;
 			
 			//test if the player ignores the sender or the sender ignores the player
 			if(GChat.essen){
 				EssenHandler e = new EssenHandler();
-				ignored = e.ignored(player, b.getPlayer());
+				ignored = e.ignored(player, main.getThePlayerModule().getThePlayer(b).getPlayer());
 			}
 			
 			//send chat from sender to player if not ignored
 			if(!ignored){
 			
 				//check for mine chat mode and if on send regular non JSON message
-				if(MinechatCompatability.mineChatStatus(b.getPlayer().getUniqueId())){
-					b.getPlayer().sendMessage(nameColor + name +": " + messageColor + message);
+				if(MinechatCompatability.mineChatStatus(main.getThePlayerModule().getThePlayer(b)
+						.getPlayer().getUniqueId())){
+					main.getThePlayerModule().getThePlayer(b).getPlayer()
+							.sendMessage(nameColor + name +": " + messageColor + message);
 				}
 				else{
-					b.getPlayer().spigot().sendMessage(fullM);
+					main.getThePlayerModule().getThePlayer(b).getPlayer().spigot().sendMessage(fullM);
 				}
 			}
 		}			
@@ -226,13 +279,17 @@ public class ChatControl{
 		messageColor = ChatColor.AQUA;
 	}
 	private void setupAdminMessage(){
-		for(ThePlayer p: GChat.onlinePlayers){
-			if(p.getPlayer().hasPermission("gchat.adminChat")){
-				recipients.add(p.getPlayer());
+		for(String p: main.getThePlayerModule().getOnlineThePlayers().keySet()){
+			if(main.getThePlayerModule().getThePlayer(p).getPlayer().hasPermission("gchat.mod")){
+				recipients.add(main.getThePlayerModule().getThePlayer(p).getPlayer());
 			}
 		}
+		messageColor = ChatColor.GREEN;
 	}
 	
+	/*
+	 * Send the message to the determined recipients.
+	 */
 	private void sendSpecialMessage(TextComponent[] fullM){
 		for(Player b: recipients){
 			boolean ignored = false;
@@ -258,16 +315,27 @@ public class ChatControl{
 	}
 	
 	//send message to group that has perm gchat.admin
-	public void adminGroupMessage(String s, boolean spy){
-		for(ThePlayer p: GChat.onlinePlayers){
-			if(p.getPlayer().hasPermission("gchat.adminChat")){
-				if(p.getSpyMode() && spy){
-					p.getPlayer().sendMessage(ChatColor.YELLOW + s + "");
-				}
-				else if(!spy){
-					p.getPlayer().sendMessage(s);
+	public void adminSpyMessage(String s){
+		for(String p: main.getThePlayerModule().getOnlineThePlayers().keySet()){
+			if(main.getThePlayerModule().getThePlayer(p).getPlayer().hasPermission("gchat.adminChat")){
+				if(main.getThePlayerModule().getThePlayer(p).isSpyMode()){
+					main.getThePlayerModule().getThePlayer(p).getPlayer().sendMessage(ChatColor.YELLOW + s + "");
 				}
 			}
 		}
+	}
+
+	/**
+	 * @return the globalMuteActive
+	 */
+	public static boolean isGlobalMuteActive() {
+		return globalMuteActive;
+	}
+
+	/**
+	 * @param globalMuteActive the globalMuteActive to set
+	 */
+	public static void setGlobalMuteActive(boolean globalMuteActive) {
+		ChatControl.globalMuteActive = globalMuteActive;
 	}
 }

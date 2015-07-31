@@ -6,13 +6,19 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.mig.gchat.GChat;
 import org.mig.gchat.chat.ChatControl;
-import org.mig.gchat.utils.GChat;
 import org.mig.gchat.utils.MinechatCompatability;
 import org.mig.gchat.utils.compatability.TownyHandler;
 
 //Command to put a player into a semipermanent state of nation chat mode
 public class TownChatCommand implements CommandExecutor{
+	
+	private GChat main;
+	
+	public TownChatCommand(GChat main){
+		this.main = main;
+	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command,
@@ -25,19 +31,24 @@ public class TownChatCommand implements CommandExecutor{
 				//If only '/tc' was run then put the player into town chat mode
 				if(args.length == 0){
 					//set town chat mode attributes
-					GChat.getThePlayer(p).setChatMode(2);
-					GChat.getThePlayer(p).setTextColor(ChatColor.AQUA);
+					main.getThePlayerModule().getThePlayer(p.getUniqueId().toString()).setChatMode(2);
 					p.sendMessage(ChatColor.AQUA + "Town Chat enabled!");
 				}
 				//If the player sends '/tc and some text' send a one time message in town chat.
 				else {
+					if(!sender.hasPermission("gchat.townmessage")){
+						sender.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
+						return true;
+					}
 					String message = args[0];
 					for(int i = 1; i < args.length; i++){
 						message = message + " " + args[i];
 					}
-					ChatControl c = new ChatControl(GChat.getThePlayer(p), message,MinechatCompatability.mineChatStatus(p.getUniqueId()));
+					ChatControl c = new ChatControl(main.getThePlayerModule().getThePlayer(p.getUniqueId().toString())
+							, message,MinechatCompatability.mineChatStatus(p.getUniqueId()), main);
 					
 					c.startSingleTownMessage();
+					c = null;
 				}
 			}
 			//if the player is in a town they are notified of such

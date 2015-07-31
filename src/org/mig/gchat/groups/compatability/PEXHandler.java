@@ -1,28 +1,47 @@
 package org.mig.gchat.groups.compatability;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
-import org.mig.gchat.utils.GChat;
+import ru.tehkode.permissions.PermissionGroup;
+import ru.tehkode.permissions.PermissionUser;
+import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 //Class made just to gather info from PEX.
 //It gathers only the group info via superperms to reduce dependency but built for future
 //capacity to upgrade.
 public class PEXHandler {
-	private GChat main = GChat.getMain();
-	
-	private Map<String, Object> getGroups(){
-		return ((MemorySection) main.getConfig().get("Groups")).getValues(false);
-	}
 	
 	public String getGroup(Player p){
-		Map<String, Object> groups = getGroups();
-		for(String s: groups.keySet()){
-			if(!s.equals("default") && p.hasPermission("group."+s)){
-				return s;
+		PermissionUser pexUser = PermissionsEx.getUser(p);
+		PermissionGroup temp = null;
+		if(pexUser.getParents()==null){
+			return "default";
+		}
+		
+		if(pexUser.getParents().size()==1){
+			return pexUser.getParents().get(0).getName();
+		}
+		
+		for(PermissionGroup g: pexUser.getParents()){
+			if(temp == null){
+				temp = g;
+			}
+			else{
+				if(g.getRank() < temp.getRank()){
+					temp = g;
+				}
 			}
 		}
-		return "default";
+		return temp.getName();
+	}
+	
+	public List<String> getAllGroups(){
+		List<String> groupList = new ArrayList<>();
+		for(PermissionGroup g: PermissionsEx.getPermissionManager().getGroupList()){
+			groupList.add(g.getName());
+		}
+		return groupList;
 	}
 }

@@ -2,11 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
-	<classpathentry kind="lib" path="C:/Users/Mig/Desktop/Minecraft/buildTools/spigot-1.8.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="https://hub.spigotmc.org/javadocs/spigot/"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="C:/Users/Mig/Desktop/Minecraft/Plugins/Towny.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="http://palmergames.com/javadoc/"/>
@@ -18,5 +13,12 @@
 			<attribute name="javadoc_location" value="http://ci.ess3.net/guestAuth/repository/download/bt10/.lastSuccessful/JavaDocs/EssentialsGroupManager/dist/javadoc/index.htmlupManager/dist/javadoc/index.html"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/Mig/workspacebuisness/townyPlayerRemovalFromLWC/spigot-1.8.3.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="https://hub.spigotmc.org/javadocs/spigot/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/Mig/Desktop/Minecraft/Plugins/SurvivalGames.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Mig/Desktop/Minecraft/Plugins/1.8/PermissionsEx-1.23.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
